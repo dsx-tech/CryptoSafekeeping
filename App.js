@@ -1,7 +1,8 @@
+// for BTC:
 import './shim.js'
 import crypto from 'crypto'
 import Bitcoin from 'react-native-bitcoinjs-lib'
-
+// end BTC
 
 import React from 'react';
 import {createAppContainer} from 'react-navigation';
@@ -58,12 +59,15 @@ class ButtonsScreen extends React.Component {
    }
 
    onClickCreateWallet = () => {
-    const keypair = Bitcoin.ECPair.makeRandom()
-    console.log("BTC adress: " + keypair.getAddress())
+     // for BTC:
+    //const keypair = Bitcoin.ECPair.makeRandom()
+    //console.log("BTC adress: " + keypair.getAddress())
     let password = "foo";
 
     //const wallet = createNewRandomWallet();
-    const wallet = new Wallet("0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a")
+    const wallet = new ethers.Wallet("0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a")
+    //address = 0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
+    
     //TODO saving wallets
 
     console.log("adress: ", wallet.address)
@@ -80,7 +84,6 @@ class ButtonsScreen extends React.Component {
    };
 
    onClickSignTransaction = () => {
-
     /*
     {
               nonce: 0,
@@ -89,47 +92,29 @@ class ButtonsScreen extends React.Component {
 
               to: "0x88a5C2d9919e46F883EB62F7b8Dd9d0CC45bc290",
 
-              value: 1.0,
+              value: 0.05,
               data: "0x",
 
               // This ensures the transaction cannot be replayed on different networks
-              chainId: "homestead"
+              chainId: "ropsten"
             }
     */
-
     let transaction = createTransactionFromBarcode(barcode)
-    
+
     console.log(transaction)
 
     let signPromise = this.state.wallet.sign(transaction)
+    console.log("wallet : " + wallet.address)
 
     signPromise.then((signedTransaction) => {
       this.setState({
       name: signedTransaction
     });
+
       console.log(signedTransaction)
-    
-    
-    
-      console.log("transaction complete")
-
-
-      //to DELETE!!! internet is here
-      let provider = ethers.getDefaultProvider()
-      provider.sendTransaction(signedTransaction).then((tx) => {
-
-      console.log(tx);
-      // {
-      //    // These will match the above values (excluded properties are zero)
-      //    "nonce", "gasLimit", "gasPrice", "to", "value", "data", "chainId"
-      //
-      //    // These will now be present
-      //    "from", "hash", "r", "s", "v"
-      //  }
-      // Hash:
-  })
+      console.log("transaction complete")      
 })
-                .catch((error) => console.log("ERROR!!!! : " + error))
+    .catch((error) => console.log("ERROR!!!! : " + error))
 
    }
    
@@ -167,7 +152,6 @@ class ButtonsScreen extends React.Component {
    }
 }
 
-//нахвания поменять, убрать ошибкку 500 с навигатором траблы
 const MainNavigator = createStackNavigator({
   Home: {screen: ButtonsScreen},
   Profile: {screen: CameraScreen},

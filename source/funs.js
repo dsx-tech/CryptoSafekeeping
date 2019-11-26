@@ -16,16 +16,9 @@ export function createTransaction(to, gasLimit, gasPrice, value, chainId, tr_dat
         nonce: 0,
         gasLimit: gasLimit,
         gasPrice: gasPrice,
-
-    
         to: to,
-        // ... or supports ENS names
-        // to: "ricmoo.firefly.eth",
-    
         value: value,
         data: tr_data,
-        
-        // This ensures the transaction cannot be replayed on different networks
         chainId: chainId
     }
 
@@ -40,8 +33,8 @@ export function createTransactionFromBarcode(barcode){
 
     let tr_data = createTransaction(json.to, 
                     json.gasLimit, 
-                    ethers.utils.bigNumberify(json.gasPrice), 
-                    ethers.utils.parseEther(json.value + ""), 
+                    ethers.utils.bigNumberify(json.gasPrice)._hex, 
+                    ethers.utils.parseEther(json.value + "")._hex, 
                     ethers.utils.getNetwork(json.chainId).chainId, 
                     json.data)
     
