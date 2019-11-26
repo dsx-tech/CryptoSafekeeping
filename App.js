@@ -16,6 +16,15 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 
 let barcode;
 
+const App = createAppContainer(MainNavigator);
+
+const MainNavigator = createStackNavigator({
+  Home: {screen: ButtonsScreen},
+  Profile: {screen: CameraScreen},
+});
+
+export default App;
+
 class CameraScreen extends React.Component {  
 
   render() {  
@@ -28,12 +37,9 @@ class CameraScreen extends React.Component {
                   style={{
                     flex: 1,
                     width: '100%',
-                    
                   }}
                   captureAudio={false}
                   onGoogleVisionBarcodesDetected={({ barcodes }) => {
-                    
-                    //barcode = ;
                     barcode = barcodes[0]
                     console.log(barcode);
                     console.log("++++")
@@ -59,17 +65,12 @@ class ButtonsScreen extends React.Component {
    }
 
    onClickCreateWallet = () => {
-     // for BTC:
-    //const keypair = Bitcoin.ECPair.makeRandom()
-    //console.log("BTC adress: " + keypair.getAddress())
-    let password = "foo";
 
     //const wallet = createNewRandomWallet();
     const wallet = new ethers.Wallet("0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a")
     //address = 0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
     
     //TODO saving wallets
-
     console.log("adress: ", wallet.address)
     console.log("privateKey: ", wallet.privateKey)
 
@@ -79,12 +80,11 @@ class ButtonsScreen extends React.Component {
     })
 
     this.render()
-    //saveWallet(this.state.wallet, 'firstwallet', 'foo')
-
    };
 
    onClickSignTransaction = () => {
     /*
+    //TO enter in JSON
     {
               nonce: 0,
               gasLimit: 21000,
@@ -114,7 +114,7 @@ class ButtonsScreen extends React.Component {
       console.log(signedTransaction)
       console.log("transaction complete")      
 })
-    .catch((error) => console.log("ERROR!!!! : " + error))
+    .catch((error) => console.log("ERROR in singing transaction: " + error))
 
    }
    
@@ -151,18 +151,6 @@ class ButtonsScreen extends React.Component {
    );
    }
 }
-
-const MainNavigator = createStackNavigator({
-  Home: {screen: ButtonsScreen},
-  Profile: {screen: CameraScreen},
-});
-
-const App = createAppContainer(MainNavigator);
-
-
-
-export default App;
-
 
 const styles = StyleSheet.create({
    container: {
