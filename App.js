@@ -95,7 +95,7 @@ class ButtonsScreen extends React.Component {
     console.log(transaction)
 
     let signPromise = this.state.wallet.sign(transaction)
-    console.log("wallet : " + wallet.address)
+    console.log("wallet : " + this.state.wallet.address)
 
     signPromise.then((signedTransaction) => {
       this.setState({
