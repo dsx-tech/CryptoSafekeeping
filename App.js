@@ -16,15 +16,6 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 
 let barcode;
 
-const App = createAppContainer(MainNavigator);
-
-const MainNavigator = createStackNavigator({
-  Home: {screen: ButtonsScreen},
-  Profile: {screen: CameraScreen},
-});
-
-export default App;
-
 class CameraScreen extends React.Component {  
 
   render() {  
@@ -104,7 +95,7 @@ class ButtonsScreen extends React.Component {
     console.log(transaction)
 
     let signPromise = this.state.wallet.sign(transaction)
-    console.log("wallet : " + wallet.address)
+    console.log("wallet : " + this.state.wallet.address)
 
     signPromise.then((signedTransaction) => {
       this.setState({
@@ -151,6 +142,15 @@ class ButtonsScreen extends React.Component {
    );
    }
 }
+
+const MainNavigator = createStackNavigator({
+  Home: {screen: ButtonsScreen},
+  Profile: {screen: CameraScreen},
+});
+
+const App = createAppContainer(MainNavigator);
+
+export default App;
 
 const styles = StyleSheet.create({
    container: {
