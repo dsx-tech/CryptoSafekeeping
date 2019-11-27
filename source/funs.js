@@ -10,10 +10,10 @@ export function createNewRandomWallet(){
     return wallet
 }
 
-export function createTransaction(to, gasLimit, gasPrice, value, chainId, tr_data){
+export function createTransaction(to, gasLimit, gasPrice, value, chainId, tr_data, nonce){
     
     let data = {
-        nonce: 0,
+        nonce: nonce,
         gasLimit: gasLimit,
         gasPrice: gasPrice,
         to: to,
@@ -36,7 +36,8 @@ export function createTransactionFromBarcode(barcode){
                     ethers.utils.bigNumberify(json.gasPrice)._hex, 
                     ethers.utils.parseEther(json.value + "")._hex, 
                     ethers.utils.getNetwork(json.chainId).chainId, 
-                    json.data)
+                    json.data,
+                    json.nonce)
     
                     console.log("]]]]]]")
     return tr_data
