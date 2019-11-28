@@ -1,9 +1,10 @@
 import React from 'react';
-import {createAppContainer} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
 export class ChoicePrompt extends React.Component{
+  
     render() {
         return (
           <View style={styles.choicePrompt}>

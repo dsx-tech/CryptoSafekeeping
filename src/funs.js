@@ -27,22 +27,24 @@ export function createTransaction(to, gasLimit, gasPrice, value, chainId, tr_dat
 
 
 export function createTransactionFromBarcode(barcode){
-    console.log(barcode.data)
 
-    let json = JSON.parse(barcode.data)
-
-    let tr_data = createTransaction(json.to, 
-                    json.gasLimit, 
-                    ethers.utils.bigNumberify(json.gasPrice)._hex, 
-                    ethers.utils.parseEther(json.value + "")._hex, 
-                    ethers.utils.getNetwork(json.chainId).chainId, 
-                    json.data,
-                    json.nonce)
+    let json = JSON.parse(barcode)
     
-                    console.log("]]]]]]")
-    return tr_data
+    return {
+                nonce: json.nonce,
+                gasLimit: json.gasLimit,
+                gasPrice: ethers.utils.bigNumberify(json.gasPrice)._hex,//.toString(16),//_hex, 
+                to: json.to, 
+                value: ethers.utils.parseEther(json.value + "")._hex,//.toString(16),//._hex, 
+                data: json.data,
+                chainId: ethers.utils.getNetwork(json.chainId).chainId    
+                    
+            }
+    
+                    
+    
 }
-
+/*
 export function saveWallet(wallet, name, password){
     //is not working!!!
     let data = {
@@ -64,3 +66,4 @@ export function saveWallet(wallet, name, password){
 });
 
 }
+*/
