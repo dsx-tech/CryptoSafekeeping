@@ -10,7 +10,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 import { RNCamera } from 'react-native-camera';
 import { ethers, Wallet } from 'ethers';
 import  {createNewRandomWallet, createTransaction, createTransactionFromBarcode, saveWallet} from "./source/funs";
-
+import { ChoicePrompt } from "./source/choicePrompt";
 
 import { StyleSheet, Text, View, Button } from 'react-native';
 
@@ -116,36 +116,42 @@ class ButtonsScreen extends React.Component {
    render() {
    return (
      <View style={styles.container}>
-       <Text>{this.state.name}</Text>
-       <View style={styles.buttonStyle}>
-          <Button
+       <View style={styles.buttonView}>
+          <Text
+                style={styles.button}
                 onPress={() => {this.onClickCreateWallet()}} 
-                title='Create'
-                color='#4169E1'>
-          </Button>
+                >
+            Create wallet
+          </Text>
         </View>
-        <View style={styles.buttonStyle}>
-          <Button
-                onPress={() => {this.onClickSignTransaction()}} 
-                title='Sign Transaction'
-                color='#4169E1'>
-          </Button>
+        <View style={styles.buttonView}>
+          <Text
+                style={styles.button}
+                onPress={() => {this.onClickSignTransaction()}}
+                >
+            Sign Transaction
+          </Text>
         </View>
-        <Button
-        title="Scan"
-        onPress={() => {
-          const { navigate } = this.props.navigation;
-          navigate('Profile')
-          }}>
-        </Button>
+        <View style={styles.buttonView}>
+          <Text
+                style={styles.button}
+                onPress={() => {
+                  const { navigate } = this.props.navigation;
+                  navigate('Profile')
+                }}>
+              Scan
+          </Text>
+        </View>
      </View>
    );
    }
 }
 
+
 const MainNavigator = createStackNavigator({
-  Home: {screen: ButtonsScreen},
-  Profile: {screen: CameraScreen},
+  Home : {screen: ChoicePrompt},
+  Ethereum: {screen: ButtonsScreen},
+  Profile: {screen: CameraScreen}
 });
 
 const App = createAppContainer(MainNavigator);
@@ -154,19 +160,25 @@ export default App;
 
 const styles = StyleSheet.create({
    container: {
+     marginTop: -300,
      flex: 1,
-     backgroundColor: '#888',
-     alignItems: 'center',
+     backgroundColor: 'white',
      justifyContent: 'center',
-   }, 
-   nameText: {
-     fontSize: 50,
-     padding: 15,
    },
-   buttonStyle: {
-    color: 'red',
-    marginTop: 20,
+   button: {
+    fontFamily: 'notoserif',
+    backgroundColor: 'black',
+    borderColor: 'white',
+    borderWidth: 1,
+    borderRadius: 12,
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    overflow: 'hidden',
     padding: 20,
-    width: 150
-   }
+    textAlign:'center',
+  },
+  buttonView:{
+    padding: 32,
+  }
 });
