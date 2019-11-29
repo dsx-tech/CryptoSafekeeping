@@ -1,8 +1,8 @@
 import React from 'react';
 import { ethers, Wallet } from 'ethers';
 import  {createNewRandomWallet, createTransaction, createTransactionFromBarcode, saveWallet} from "../funs";
-import { StyleSheet, Text, View, Button } from 'react-native';
-
+import { StyleSheet, Text, View, Button, Picker } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 
 export class ButtonsScreenEther extends React.Component {
 
@@ -13,8 +13,7 @@ export class ButtonsScreenEther extends React.Component {
 
    onClickCreateWallet = () => {
 
-    //const wallet = createNewRandomWallet();
-    const wallet = new ethers.Wallet("0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a")
+    //const wallet = new ethers.Wallet(this.state.pKey)
     //address = 0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
     
     //TODO saving wallets
@@ -22,7 +21,6 @@ export class ButtonsScreenEther extends React.Component {
     console.log("privateKey: ", wallet.privateKey)
 
     this.setState({
-      name: "wallet has been created",
       wallet: wallet
     })
 
@@ -46,10 +44,9 @@ export class ButtonsScreenEther extends React.Component {
               chainId: "ropsten"
             }
     */
-      console.log(JSON.stringify(this.props.navigation.getParam('barcode').data))
       let transaction = createTransactionFromBarcode(this.props.navigation.getParam('barcode').data)
 
-      console.log(transaction)
+      console.log('pKey: ' + this.state.wallet.privateKey)
 
       let signPromise = this.state.wallet.sign(transaction)
       console.log("wallet : " + this.state.wallet.address)
@@ -72,14 +69,32 @@ export class ButtonsScreenEther extends React.Component {
    render() {
    return (
      <View style={styles.container}>
-       <View style={styles.buttonView}>
-          <Text
-                style={styles.button}
-                onPress={() => {this.onClickCreateWallet()}} 
-                >
-            Create wallet
-          </Text>
-        </View>
+       <View style={styles.pickerView}>
+         <RNPickerSelect
+            placeholder = { {label : "Select an address...", value: null }}
+            onValueChange={(value) => {
+              if (value)
+                if (value == 'random') {
+                    this.setState(
+                    {
+                      wallet: ethers.Wallet.createRandom()
+                    }
+                  ) 
+              }
+                else
+                  this.setState(
+                { wallet: new ethers.Wallet(value) }
+                  )
+          }}
+            items={[
+              //TO DO creating wallet!!!!
+                { label: 'new random wallet', value: 'random' },
+                { label: 'first', value: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a' },
+                { label: 'second', value: '0x1778b368d6847f01cc48dc891598675db61500b31cfe6448eb564ccfdcab698c' },
+                { label: 'third', value: '0x8358a123d279423f239dc2cbc5dede46975f9de654d800f594cbab4ae8faea34' },
+            ]}
+        />
+       </View>
         <View style={styles.buttonView}>
           <Text
                 style={styles.button}
@@ -111,6 +126,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     justifyContent: 'center',
+  },
+  pickerView: {
+    padding: 32,
+    fontFamily: 'notoserif',
+   backgroundColor: 'black',
+   
   },
   button: {
    fontFamily: 'notoserif',
