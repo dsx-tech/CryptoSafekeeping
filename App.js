@@ -4,9 +4,9 @@ import {createStackNavigator} from 'react-navigation-stack';
 import { ethers, Wallet } from 'ethers';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { ChoicePrompt } from './src/navigation/ChoicePrompt';
-import { ButtonsScreenEther } from './src/navigation/ButtonsScreenEther';
-import { BarcodeScan } from './src/navigation/BarcodeScan';
-import { BarcodeGeneration } from './src/navigation/BarcodeGeneration';
+import { ButtonsScreenEther } from './src/navigation/Ethereum/ButtonsScreenEther';
+import { BarcodeScan } from './src/navigation/Ethereum/BarcodeScan';
+import { BarcodeGeneration } from './src/navigation/Ethereum/BarcodeGeneration';
 
 let barcode;
 

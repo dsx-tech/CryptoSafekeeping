@@ -1,4 +1,4 @@
-import '../..//shim';
+import '../../..//shim';
 import React from 'react';
 import QRCode from 'react-native-qrcode-image';
 import { StyleSheet, View } from 'react-native';

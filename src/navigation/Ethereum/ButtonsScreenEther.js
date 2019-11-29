@@ -1,6 +1,6 @@
 import React from 'react';
 import { ethers, Wallet } from 'ethers';
-import  {createNewRandomWallet, createTransaction, createTransactionFromBarcode, saveWallet} from "../funs";
+import  {createNewRandomWallet, createTransaction, createTransactionFromBarcode, saveWallet} from "../../funs";
 import { StyleSheet, Text, View, Button, Picker } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
