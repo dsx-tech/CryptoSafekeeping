@@ -6,25 +6,32 @@ import RNPickerSelect from 'react-native-picker-select';
 
 export class ButtonsScreenEther extends React.Component {
 
-  
   static navigationOptions = {
     title: 'Choose the option',
   }
 
-   onClickCreateWallet = () => {
+  state = {
+    wallet: null,
+    pKey: ''
+  }
 
-    //const wallet = new ethers.Wallet(this.state.pKey)
+   onClickCreateWallet = () => {
+      if (this.state.pKey == 'random')
+        this.setState(
+          { 
+            wallet: ethers.Wallet.createRandom()}
+        )
+      else
+        this.setState(
+          { 
+            wallet: new ethers.Wallet(this.state.pKey)
+          }
+    )
     //address = 0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
     
     //TODO saving wallets
-    console.log("adress: ", wallet.address)
-    console.log("privateKey: ", wallet.privateKey)
-
-    this.setState({
-      wallet: wallet
-    })
-
     this.render()
+
    };
 
    onClickSignTransaction = () => {
@@ -62,29 +69,24 @@ export class ButtonsScreenEther extends React.Component {
 
    }
    
-   barcodeRecognized = ({ barcodes }) => {
-    barcodes.forEach(barcode => console.warn(barcode.data))
-  };
+   //barcodeRecognized = ({ barcodes }) => {
+    //barcodes.forEach(barcode => console.warn(barcode.data))
+  //};
 
    render() {
    return (
      <View style={styles.container}>
-       <View style={styles.pickerView}>
+        <View style={styles.pickerView}>
          <RNPickerSelect
             placeholder = { {label : "Select an address...", value: null }}
             onValueChange={(value) => {
-              if (value)
-                if (value == 'random') {
+                    
                     this.setState(
                     {
-                      wallet: ethers.Wallet.createRandom()
-                    }
-                  ) 
-              }
-                else
-                  this.setState(
-                { wallet: new ethers.Wallet(value) }
-                  )
+                      wallet: null,
+                      pKey: value
+                    });
+                  
           }}
             items={[
               //TO DO creating wallet!!!!
@@ -94,13 +96,13 @@ export class ButtonsScreenEther extends React.Component {
                 { label: 'third', value: '0x8358a123d279423f239dc2cbc5dede46975f9de654d800f594cbab4ae8faea34' },
             ]}
         />
-       </View>
+        </View>
         <View style={styles.buttonView}>
           <Text
                 style={styles.button}
-                onPress={() => {this.onClickSignTransaction()}}
+                onPress={() => {this.onClickCreateWallet()}}
                 >
-            Sign Transaction
+            Create wallet
           </Text>
         </View>
         <View style={styles.buttonView}>
@@ -109,10 +111,18 @@ export class ButtonsScreenEther extends React.Component {
                 onPress={() => {
 
                   const { navigate } = this.props.navigation;
-                  navigate('ScanBarcode');
+                  navigate('ScanBarcode', {button: this});
                   
                 }}>
               Scan
+          </Text>
+        </View>
+        <View style={styles.buttonView}>
+          <Text
+                style={styles.button}
+                onPress={() => {this.onClickSignTransaction()}}
+                >
+            Sign Transaction
           </Text>
         </View>
      </View>
@@ -129,6 +139,7 @@ const styles = StyleSheet.create({
   },
   pickerView: {
     padding: 32,
+    marginTop: 100,
     fontFamily: 'notoserif',
    backgroundColor: 'black',
    

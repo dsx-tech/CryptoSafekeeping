@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
 export class BarcodeScan extends React.Component {  
@@ -18,7 +18,33 @@ export class BarcodeScan extends React.Component {
                   captureAudio={false}
                   onGoogleVisionBarcodesDetected={({ barcodes }) => {
                     let barcode = barcodes[0];
-                    this.props.navigation.navigate('Ethereum', {barcode: barcode});
+                    let show = JSON.parse(barcode.data)
+                    this.props.navigation.navigate('Ethereum', {barcode: barcode})
+                    
+                    Alert.alert(
+                      'Transaction',
+                      'to: ' + show.to + '\n' +
+                      'Gas Limit: ' + show.gasLimit + '\n' +
+                      'Gas Price: ' + show.gasPrice + '\n' +
+                      'Value: ' + show.value + '\n' +
+                      'nonce: ' + show.nonce + '\n' +
+                      'data: ' + show.data + '\n' +
+                      'chain: ' + show.chainId,
+
+                      [
+                        {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+                        {
+                          text: 'Cancel',
+                          onPress: () => console.log('Cancel Pressed'),
+                          style: 'cancel',
+                        },
+                        {text: 'OK', onPress: () => this.props.navigation.getParam('button').onClickSignTransaction()},
+                      ],
+                      {cancelable: false},
+                    );
+                    
+
+                    
                   }}
                 >
           </RNCamera>
