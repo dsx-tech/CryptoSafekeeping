@@ -2,6 +2,7 @@ import React from 'react';
 import { ethers, Wallet } from 'ethers';
 import  {createNewRandomWallet, createTransaction, createTransactionFromBarcode, saveWallet} from "../../funs";
 import { StyleSheet, Text, View, Button, Picker } from 'react-native';
+
 import RNPickerSelect from 'react-native-picker-select';
 
 export class ButtonsScreenEther extends React.Component {
@@ -10,10 +11,17 @@ export class ButtonsScreenEther extends React.Component {
     title: 'Choose the option',
   }
 
-  state = {
-    wallet: null,
-    pKey: ''
-  }
+
+  list = [
+    {
+      name: 'first',
+      pKey: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a'
+    },
+    {
+      name: 'second',
+      pKey: '0x1778b368d6847f01cc48dc891598675db61500b31cfe6448eb564ccfdcab698c'
+    }
+  ]
 
    onClickCreateWallet = () => {
       if (this.state.pKey == 'random')
@@ -38,7 +46,7 @@ export class ButtonsScreenEther extends React.Component {
     /*
     //TO enter in JSON
     {
-              nonce: 0,
+              nonce: 17,
               gasLimit: 21000,
               gasPrice: 2000000000,
 
@@ -77,6 +85,7 @@ export class ButtonsScreenEther extends React.Component {
    return (
      <View style={styles.container}>
         <View style={styles.pickerView}>
+         
          <RNPickerSelect
             placeholder = { {label : "Select an address...", value: null }}
             onValueChange={(value) => {
@@ -96,6 +105,7 @@ export class ButtonsScreenEther extends React.Component {
                 { label: 'third', value: '0x8358a123d279423f239dc2cbc5dede46975f9de654d800f594cbab4ae8faea34' },
             ]}
         />
+
         </View>
         <View style={styles.buttonView}>
           <Text
