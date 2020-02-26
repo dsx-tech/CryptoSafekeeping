@@ -12,6 +12,12 @@
   <q-item class="flex flex-center">
     <button @click="Scan">ScanQRCode</button>
   </q-item>
+  <q-item class="flex flex-center">
+    <button @click="DesktopSending">Desktop Sending</button>
+  </q-item>
+  <q-item class="flex flex-center">
+    <button @click="CallMultiSig">CallMultiSig</button>
+  </q-item>
     <h5>{{ message }}</h5>
       <div class="q-pa-md" style="max-width: 350px">
     <q-toolbar class="bg-primary text-white shadow-2">
