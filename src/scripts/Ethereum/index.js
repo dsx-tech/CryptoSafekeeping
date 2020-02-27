@@ -630,7 +630,9 @@ const contacts = [
     //3 ethers
     {name: 'third', key: '0x8358a123d279423f239dc2cbc5dede46975f9de654d800f594cbab4ae8faea34'}, //0xCe39AB30911Eeb024eB6316123339A4893337639
     {name: 'fourth', key: '0x51cf48d3ac567c2cf65540d49f92cb8f50bba3a8b9b329814d96ad188dd70da8'}, //0xE704eBE589b6ac907887D1997df7BF69A50D416E
-    {name: 'fifth', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a'}]
+	{name: 'fifth', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a'},
+	{name: 'sixth', key: '0x9EA9EDB02DEA132BBF903299397496E51B6068D12DA040F0BD9FC503F60673B0'}, //0x98773812A261A98Bb73d00EC9B72dEA0BD2a9479
+]
 
 export default {
   data () {
@@ -644,6 +646,7 @@ export default {
   methods: {
 
     Address () {
+		alert("fff");
       var pKey = ethers.Wallet.createRandom().privateKey
       alert('New wallets private key: ' + pKey)
       contacts.push({ id: 6, name: 'first wallet', key: pKey })
@@ -865,14 +868,14 @@ export default {
         var func = iface.functions.confirmTransaction;
         //var func = contract.functions.isOwner('0x00F7357E503B6cE0622Cf5311739dA27EDF4a875')
         
-        console.log('func data: ' + func.encode(['0xdb77eb5f22994a1e39de68f754afca71e61ea48a75f22026754fb543a3b32d50']))
+        console.log('func data: ' + func.encode([0]))
 
         var tx = {
-            gasPrice: 2000100000,
+            gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
             gasLimit: 8000000,
-            data: func.encode(['0xdb77eb5f22994a1e39de68f754afca71e61ea48a75f22026754fb543a3b32d50']),
+            data: func.encode([0]),
             to: contractAddress,
-            nonce: 3,
+            nonce: 4,
             chainId: 3
         }
 

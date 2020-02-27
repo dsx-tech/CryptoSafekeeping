@@ -18,6 +18,9 @@
   <q-item class="flex flex-center">
     <button @click="CallMultiSig">CallMultiSig</button>
   </q-item>
+  <q-item class="flex flex-center">
+    <button @click="Test">test</button>
+  </q-item>
     <h5>{{ message }}</h5>
       <div class="q-pa-md" style="max-width: 350px">
     <q-toolbar class="bg-primary text-white shadow-2">
@@ -51,4 +54,5 @@
   </q-page>
 </template>
 
-<script src="../scripts/Ethereum/index.js"></script>
+<script src="../scripts/Ethereum/index.js"></script>-->
+<script src="../scripts/Ethereum/test.js"></script>
