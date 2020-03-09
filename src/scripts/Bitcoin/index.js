@@ -16,7 +16,7 @@ const multisigContacts = [ {
   key: bitcoin.ECPair.makeRandom({ network: testnet }),
   holders: 2,
   signs: 1,
-  keyList: [Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB')]
+  keyList: [{key: Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'),name:'Anna'},{key: Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB'),name: 'Fred'}]
 },
 {
   name: 'name 2',
@@ -24,7 +24,7 @@ const multisigContacts = [ {
   key: bitcoin.ECPair.fromWIF('L4TTkYNJo6ZYW4rdLKp3gPyUnDuVrSHCTKW958HKouLymzwgE3m5'),
   holders: 4,
   signs: 3,
-  keyList: [Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB')]
+  keyList: [{ key:Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), name: 'Bob'}, {key: Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB'), name: 'Kate'}]
 },
 {
   address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
@@ -32,7 +32,7 @@ const multisigContacts = [ {
   key: bitcoin.ECPair.fromWIF('cP1tkWhhMbtuFPVpRcjS8s8Xae15gvUhchXWiwcWXJGfB7SCVHhq', testnet),
   holders: 2,
   signs: 1,
-  keyList: [Buffer.from('039a696dbc7a422faa42688bfef236dd9b81585676a6c2cb185e1db39a195757d9', 'hex'), Buffer.from('026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01', 'hex')]
+  keyList: [{key: Buffer.from('039a696dbc7a422faa42688bfef236dd9b81585676a6c2cb185e1db39a195757d9', 'hex'), name: 'James'}, {key: Buffer.from('026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01', 'hex'), name: 'Alice'}]
 }]
 export default {
   data () {
@@ -44,7 +44,9 @@ export default {
       CountDialog: false,
       CountRequared: false,
       countHolders: '',
-      countSigns: ''
+      countSigns: '',
+      tab: 'addresses',
+      splitterModel: 20
     }
   },
   methods: {

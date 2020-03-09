@@ -1,26 +1,87 @@
 <template>
  <div class="q-pa-sm">
-   <q-card class="no-margin">
-   <h6> Your name:</h6>
+   <h6> Address name:</h6>
    <p> {{name}} </p>
    <h6> Your address:</h6>
    <p> {{address}} </p>
-   <h6> Your private key: </h6>
+   <!--<h6> Your private key: </h6>
    <p v-if="show"> {{privateKey}} </p>
    <button @click="show = !show">Hide / Show</button>
-   <h6> Your public key:</h6>
+    <h6> Your public key:</h6>
    <p> {{publicKey}} </p>
    <q-item class="flex flex-center">
       <button @click="ExportKey(publicKey)"> Export your public key </button>
    </q-item>
-   </q-card>
-   <h6>Keys:</h6>
+  <h6>Keys:</h6>
    <ul>
-       <li v-for="item in keyList" :key="item.address">{{ item }}</li>
+       <li v-for="item in keyList" :key="item.address">{{ item.key.toString('hex') }}</li>
    </ul>
    <q-item class="flex flex-center">
     <button @click="ScanForMultisig(key, holders, signs, BufferKeyList)"> Sign transaction </button>
-  </q-item>
+  </q-item> -->
+
+    <q-toolbar class="bg-primary text-white shadow-2">
+      <q-toolbar-title>Keys</q-toolbar-title>
+    </q-toolbar>
+    <q-list inset-separator bordered>
+    <q-item v-for="item in keyList" :key="item.key" class="q-my-sm" clickable v-ripple>{{ item.name }}
+      <q-separator spaced inset />
+        <q-btn round color="blue" icon="more_vert" size="10px">
+        <q-menu
+          anchor="top right"
+          self="top left"
+        >
+          <q-list style="min-width: 100px">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                 <q-item-label @click= "ExportKey(item.key.toString('hex'))"> export public key</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <q-item-label @click="ShowKey(item.key.toString('hex'))">show public key</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+    </q-item>
+  </q-list>
+  <q-list inset-separator bordered>
+    <q-item v-for="item in myKeys" :key="item.key" class="q-my-sm" clickable v-ripple>{{ item.name }} (your key)
+
+      <q-separator inset />
+               
+        <q-btn round color="blue" icon="more_vert" size="10px">
+    
+        <q-menu
+          anchor="top right"
+          self="top left"
+        >
+          <q-list style="min-width: 100px">
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                 <q-item-label @click= "ExportKey(item.key.toString('hex'))"> export public key</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <q-item-label @click="ShowKey(item.key.toString('hex'))">show public key</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-separator spaced inset />
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <q-item-label @click="ShowKey(privateKey)">show private key</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+    </q-item>
+  </q-list>
   <button @click="Back()">Back</button>
  </div>
 </template>
@@ -38,8 +99,9 @@ export default{
     publicKey: this.$route.params.key.publicKey.toString('hex'),
     signs: this.$route.params.signs,
     holders: this.$route.params.holders,
-    keyList: this.$route.params.keyList.map(x => x.toString('hex')),
-    BufferKeyList: this.$route.params.keyList,
+    keyList: this.$route.params.keyList.filter(x => x.key.toString('hex') != this.$route.params.key.publicKey.toString('hex')),
+    myKeys: this.$route.params.keyList.filter(x => x.key.toString('hex') == this.$route.params.key.publicKey.toString('hex')),
+    BufferKeyList: this.$route.params.keyList.map(x => x.key),
     address: this.$route.params.address,
     name: this.$route.params.name
    }
@@ -98,20 +160,24 @@ export default{
       )
     },  
     ExportKey(key){
+
     if (key !== Boolean(false)) {
-            cordova.plugins.barcodeScanner.encode(cordova.plugins.barcodeScanner.Encode.TEXT_TYPE, key, function (success) {
-              alert('encode success: ' + success)
-            }, function (fail) {
-              alert('encoding failed: ' + fail)
-            }
-            )
-          } else {
-            alert('error')
-          }
+      cordova.plugins.barcodeScanner.encode(cordova.plugins.barcodeScanner.Encode.TEXT_TYPE, key, function (success) {
+        alert('encode success: ' + success)
+      }, function (fail) {
+        alert('encoding failed: ' + fail)
+      }
+      )
+    } else {
+      alert('error')
+    }
     },
     Back(){
         this.$router.push ({name: 'Bitcoin' })
-    }  
+    },
+    ShowKey(key){
+    alert(key)
+    }
   }
 }
 </script>
