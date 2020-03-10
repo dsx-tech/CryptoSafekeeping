@@ -24,7 +24,7 @@
       <q-toolbar-title>Keys</q-toolbar-title>
     </q-toolbar>
     <q-list inset-separator bordered>
-    <q-item v-for="item in keyList" :key="item.key" class="q-my-sm" clickable v-ripple>{{ item.name }}
+    <q-item v-for="(item, idx) in keyList" :key="idx" class="q-my-sm" clickable v-ripple>{{ item.name }}
       <q-separator spaced inset />
         <q-btn round color="blue" icon="more_vert" size="10px">
         <q-menu
@@ -49,7 +49,7 @@
     </q-item>
   </q-list>
   <q-list inset-separator bordered>
-    <q-item v-for="item in myKeys" :key="item.key" class="q-my-sm" clickable v-ripple>{{ item.name }} (your key)
+    <q-item v-for="(item, idx) in myKeys" :key='idx' class="q-my-sm" clickable v-ripple>{{ item.name }} (your key)
 
       <q-separator inset />
                
@@ -87,8 +87,8 @@
 </template>
 
 <script>
-var bitcoin = require('bitcoinjs-lib')
-var testnet = bitcoin.networks.testnet
+let bitcoin = require('bitcoinjs-lib')
+let testnet = bitcoin.networks.testnet
 export default{
   name:'bitcoinAddress',
   data(){
@@ -110,13 +110,11 @@ export default{
     ScanForMultisig (key, holders, signs, keyList) {
       cordova.plugins.barcodeScanner.scan(
       function (result) {
-      var bitcoin = require('bitcoinjs-lib')
-      var testnet = bitcoin.networks.testnet
-      var text = confirm('We got a barcode\n' +
+      let text = confirm('We got a barcode\n' +
       'Result: ' + result.text + '\n')
-      var pos1 = result.text.indexOf('"Input":"') + 8
-      var pos2 = result.text.indexOf('"Output":"') + 9
-      var pos3 = result.text.indexOf('"Amount":"') + 9
+      let pos1 = result.text.indexOf('"Input":"') + 8
+      let pos2 = result.text.indexOf('"Output":"') + 9
+      let pos3 = result.text.indexOf('"Amount":"') + 9
       let str1 = result.text.substring(pos1 + 1, result.text.indexOf('"', pos1 + 1))
       alert(str1)
       let str2 = result.text.substring(pos2 + 1, result.text.indexOf('"', pos2 + 1))
@@ -127,11 +125,11 @@ export default{
       // let str2 = 'n4VQ5YdHf7hLQ2gWQYYrcxoE5B7nWuDFNF'
       // let amount = 1000000
       // let text = true
-      var tx = bitcoin.Transaction.fromHex(str1, { network: testnet })
+      let tx = bitcoin.Transaction.fromHex(str1, { network: testnet })
       alert(tx.getId())
       const p2ms = bitcoin.payments.p2ms({ m: signs, pubkeys: keyList, network: testnet })
       const multisig = bitcoin.payments.p2sh({ redeem: p2ms, network: testnet })
-      var data = { hash: tx.getId(), index: 1, nonWitnessUtxo: Buffer.from(str1, 'hex'), redeemScript: multisig.redeem.output}
+      let data = { hash: tx.getId(), index: 1, nonWitnessUtxo: Buffer.from(str1, 'hex'), redeemScript: multisig.redeem.output}
       alert(multisig.redeem.output.toString('hex'))
       alert(tx.getHash().toString('hex'))
       const psbt = new bitcoin.Psbt({ network: testnet })
@@ -173,7 +171,7 @@ export default{
     }
     },
     Back(){
-        this.$router.push ({name: 'Bitcoin' })
+        this.$router.go(-1)
     },
     ShowKey(key){
     alert(key)

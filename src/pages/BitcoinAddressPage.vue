@@ -17,8 +17,8 @@
 </template>
 
 <script>
-var bitcoin = require('bitcoinjs-lib')
-var testnet = bitcoin.networks.testnet
+let bitcoin = require('bitcoinjs-lib')
+let testnet = bitcoin.networks.testnet
 export default{
   name:'bitcoinAddress',
   data(){
@@ -35,13 +35,12 @@ export default{
    Scan (key) {
       cordova.plugins.barcodeScanner.scan(
         function (result) {
-          var bitcoin = require('bitcoinjs-lib')
-          var text = confirm('We got a barcode\n' +
+          let text = confirm('We got a barcode\n' +
           'Result: ' + result.text + '\n')
-          var tx = new bitcoin.TransactionBuilder()
-          var pos1 = result.text.indexOf('"Input":"') + 8
-          var pos2 = result.text.indexOf('"Output":"') + 9
-          var pos3 = result.text.indexOf('"Amount":"') + 9
+          let tx = new bitcoin.TransactionBuilder()
+          let pos1 = result.text.indexOf('"Input":"') + 8
+          let pos2 = result.text.indexOf('"Output":"') + 9
+          let pos3 = result.text.indexOf('"Amount":"') + 9
           let str1 = result.text.substring(pos1 + 1, result.text.indexOf('"', pos1 + 1))
           alert(str1)
           let str2 = result.text.substring(pos2 + 1, result.text.indexOf('"', pos2 + 1))

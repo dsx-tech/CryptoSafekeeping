@@ -1,10 +1,6 @@
 
 <template>
   <q-page>
-    <h5>{{ message }}</h5>
-      <div class="q-pa-md" style="max-width: 350px">
-       
-  </div>
   <q-dialog v-model="inception">
       <q-card>
         <q-card-section>
@@ -100,5 +96,4 @@
   </div>
   </q-page>
 </template>
-
 <script src="../scripts/Bitcoin/index.js"></script>-->

@@ -1,7 +1,7 @@
 export default {
-	methods: {
-		Test () {
-			alert('Testing');
-		  }
-	}
+  methods: {
+    Test () {
+      alert('Testing')
+    }
+  }
 }
