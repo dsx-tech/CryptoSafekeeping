@@ -1,3 +1,5 @@
+import Contract from './contracts/Contract.js'
+
 var ethers = require('ethers')
 
 const contacts = [ 
@@ -14,14 +16,17 @@ const contacts = [
 export default {
 
 	newAddress() {
-		alert("fff");
       var pKey = ethers.Wallet.createRandom().privateKey
       alert('New wallets private key: ' + pKey)
       contacts.push({ id: 6, name: 'first wallet', key: pKey })
     },
 
     newMultisigAddress() {
-	  let provider = ethers.getDefaultProvider('ropsten');
+      let contract = new Contract()
+      let abi = contract.abiJSON
+      let bytecode = contract.BYTECODE
+
+	    let provider = ethers.getDefaultProvider('ropsten');
       
       let privateKey = '0x51cf48d3ac567c2cf65540d49f92cb8f50bba3a8b9b329814d96ad188dd70da8';
       
