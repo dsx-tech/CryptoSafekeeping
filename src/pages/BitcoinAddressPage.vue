@@ -66,7 +66,7 @@ export default{
       )
     },
     Back(){
-        this.$router.push ({name: 'Bitcoin' })
+        this.$router.go(-1)
     }
   }
 } 

@@ -5,24 +5,17 @@ const routes = [
     component: () => import('layouts/MyLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: '/bitcoin', component: () => import('pages/BitcoinPage.vue'), name: 'bitcoin',
-        children: [
-          {
-          path: 'BitcoinMultisigAddressPage/:key?/:signs?/:holders?/:keyList?/:address?/:name?',
-          component: () => import('pages/BitcoinMultisigAddressPage.vue'), 
-          name: 'BitcoinMultisigPage'
-          },
-          {
-            path:'BitcoinAddressPage/:key?/:name?/:address?', 
-            component: () => import('pages/BitcoinAddressPage.vue'), 
-            name: 'BitcoinPage' 
-          },
-          {
-            path:'', 
-            component: () => import('pages/BitcoinPage.vue'), 
-          }
-        ] 
-    },
+      { path: '/bitcoin', component: () => import('pages/BitcoinPage.vue') },
+      {
+      path: '/BitcoinMultisigAddressPage/:key?/:signs?/:holders?/:keyList?/:address?/:name?',
+      component: () => import('pages/BitcoinMultisigAddressPage.vue'), 
+      name: 'BitcoinMultisigPage'
+      },
+      {
+        path:'/BitcoinAddressPage/:key?/:name?/:address?', 
+        component: () => import('pages/BitcoinAddressPage.vue'), 
+        name: 'BitcoinPage' 
+      },
       { path: '/ethereum', component: () => import('pages/EthereumPage.vue') },
       { path: '/startPage', component: () => import('pages/Index.vue') },
     ]
