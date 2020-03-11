@@ -1,9 +1,17 @@
 var ethers = require('ethers')
 import Contract from './contracts/Contract.js'
 
+let tx = 'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj';
 
 export default {
+  data(){
+    return {
+      transaction: tx
+    }
+  },
+
   signing(wallet, transaction){
+    tx = 'fffffffffffffffffffffffffffffffff'
     let signPromise = wallet.sign(transaction)
             signPromise.then((signedTransaction) => {
                     alert(signedTransaction)

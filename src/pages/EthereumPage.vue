@@ -21,7 +21,8 @@
   <q-item class="flex flex-center">
     <button @click="ConfirmMultiSig">Confirm Multisignature Transaction</button>
   </q-item>
-  <qriously :value="transaction" :size="230" />
+  <p>fadffffffffffffffffffffffffffffffffffffffffff
+    </p>
     <h5>{{ message }}</h5>
       <div class="q-pa-md" style="max-width: 350px">
     <q-toolbar class="bg-primary text-white shadow-2">

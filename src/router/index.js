@@ -9,10 +9,6 @@ import routes from './routes'
 
 Vue.use(VueRouter)
 
-import VueQriously from 'vue-qriously'
-
-Vue.use(VueQriously)
-
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;

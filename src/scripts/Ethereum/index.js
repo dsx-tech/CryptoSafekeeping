@@ -5,7 +5,9 @@ import Transaction from './Transaction.js'
 import QRcode from './QRcode.js'
 import Desktop from './Desktop.js'
 import ERC20Token from './ERC20Token.js'
-
+import Vue from 'vue'
+import QrcodeVue from 'qrcode.vue'
+ 
 
 const contacts = [ 
   {name: 'first', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a'}, //0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
@@ -26,10 +28,11 @@ export default {
       confirm: false
     }
   },
-
+  
   methods: {
 
     Address () {
+      new Vue({ el: '#components-demo' })
 		  return Addresses.newAddress();
     },
 
