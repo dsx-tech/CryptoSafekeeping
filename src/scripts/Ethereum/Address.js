@@ -54,4 +54,36 @@ export default {
 
       })();
     },
+
+    newMultisigAddressFrom(privateKey) {
+      let contract = new Contract()
+      let abi = contract.abiJSON
+      let bytecode = contract.BYTECODE
+
+	    let provider = ethers.getDefaultProvider('ropsten');
+      
+      let wallet = new ethers.Wallet(privateKey, provider);
+      
+      (async function() {
+
+        let overrides = {
+            gasLimit: 8000000,
+            gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
+            nonce: 1,
+            chainId: 3
+        }
+
+        // Create an instance of a Contract Factory
+        let factory = new ethers.ContractFactory(abi, bytecode, wallet);
+        
+        //console.log("factory: " + factory);
+        let transaction = await factory.getDeployTransaction(['0x55D73ccA422253a8a287074c6f4857Dd15EFdC46', '0xE704eBE589b6ac907887D1997df7BF69A50D416E'], 2, overrides);
+        //console.log(transaction)
+        let signPromise = wallet.sign(transaction);
+        //console.log("wallet : " + wallet.address);
+      
+        signPromise.then((signedTransaction) => console.log("deployed transaction: " + signedTransaction));
+
+      })();
+    },
 }

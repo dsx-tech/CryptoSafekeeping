@@ -1,33 +1,39 @@
 import MultisigContract from './contracts/MultisigContract.js'
+import Contract from './contracts/Contract.js'
 import Transaction from './Transaction.js'
 var ethers = require('ethers');
 
 export default {
-    transfer(){
+
+    transfer(privateKey, transaction){
 
         let abiToken = new MultisigContract().abiJSON;
+        //to do: get provider by id from transaction
         let provider = ethers.getDefaultProvider('ropsten');
-        let privateKey = '0x9EA9EDB02DEA132BBF903299397496E51B6068D12DA040F0BD9FC503F60673B0';
         let wallet = new ethers.Wallet(privateKey, provider);
-        
-        //TO DO scan from QR-code
-        let contractAddress = "0x3b94F6446C1EB46472B246d40dC99162C271c3D4";
         
         var iface = new ethers.utils.Interface(abiToken);
         var func = iface.functions.transfer;
-        //var func = contract.functions.isOwner('0x00F7357E503B6cE0622Cf5311739dA27EDF4a875')
         
-        //console.log('func data: ' + func.encode(['0x98773812A261A98Bb73d00EC9B72dEA0BD2a9479', '0x6692d46B5319a0AE807264155C6725EF951378eD', 1000]))
+        transaction.data =  func.encode(['0x6692d46B5319a0AE807264155C6725EF951378eD', transaction.value])
+        transaction.value = 0
 
-        var transaction = {
-            gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
-            gasLimit: 8000000,
-            data: func.encode(['0x6692d46B5319a0AE807264155C6725EF951378eD', 1000]),
-            to: contractAddress,
-            nonce: 10,
-            chainId: 3
-        }
+        return Transaction.signing(wallet, transaction)
+    },
 
-        new Transaction.signing(wallet, transaction)
+    transferMulti(privateKey, transaction, tokenAddress, reciever){      
+
+        let abiJSON = new Contract().abiJSON
+        //to do: get provider by id from transaction
+        let provider = ethers.getDefaultProvider('ropsten');
+        let wallet = new ethers.Wallet(privateKey, provider);
+        
+        let iface = new ethers.utils.Interface(abiJSON);
+        let func = iface.functions.submitTransaction;
+        transaction.data = func.encode([tokenAddress, 0, '0xa9059cbb000000000000000000000000' + reciever + '00000000000000000000000000000000000000000000000000000000000003e8']),
+
+        transaction.value = 0
+
+        return Transaction.signing(wallet, transaction)
     }
 }
