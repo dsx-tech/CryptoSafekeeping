@@ -87,9 +87,11 @@
 </template>
 
 <script>
+import { QrcodeStream } from 'vue-qrcode-reader'
 let bitcoin = require('bitcoinjs-lib')
 let testnet = bitcoin.networks.testnet
 export default{
+  components: { QrcodeStream },
   name:'bitcoinAddress',
   data(){
    return{
@@ -103,11 +105,12 @@ export default{
     myKeys: this.$route.params.keyList.filter(x => x.key.toString('hex') == this.$route.params.key.publicKey.toString('hex')),
     BufferKeyList: this.$route.params.keyList.map(x => x.key),
     address: this.$route.params.address,
-    name: this.$route.params.name
+    name: this.$route.params.name,
+    result: ''
    }
   },
   methods: {
-    ScanForMultisig (key, holders, signs, keyList) {
+   /* ScanForMultisig (key, holders, signs, keyList) {
       cordova.plugins.barcodeScanner.scan(
       function (result) {
       let text = confirm('We got a barcode\n' +
@@ -156,7 +159,10 @@ export default{
       }
        }
       )
-    },  
+    },  */
+    ScanForMultisig (key, holders, signs, keyList) {
+      this.result = result
+    },
     ExportKey(key){
 
     if (key !== Boolean(false)) {
@@ -175,6 +181,25 @@ export default{
     },
     ShowKey(key){
     alert(key)
+    },
+     async onInit (promise) {
+      try {
+        await promise
+      } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          this.error = "ERROR: you need to grant camera access permisson"
+        } else if (error.name === 'NotFoundError') {
+          this.error = "ERROR: no camera on this device"
+        } else if (error.name === 'NotSupportedError') {
+          this.error = "ERROR: secure context required (HTTPS, localhost)"
+        } else if (error.name === 'NotReadableError') {
+          this.error = "ERROR: is the camera already in use?"
+        } else if (error.name === 'OverconstrainedError') {
+          this.error = "ERROR: installed cameras are not suitable"
+        } else if (error.name === 'StreamApiNotSupportedError') {
+          this.error = "ERROR: Stream API is not supported in this browser"
+        }
+      }
     }
   }
 }
