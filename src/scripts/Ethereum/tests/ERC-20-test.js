@@ -12,12 +12,12 @@ function sendToken(nonce){
         gasLimit: 8000000,
         data: '',
         value: 1000,
-        to: tokenAddress,
+        to: reciever,
         nonce: nonce,
         chainId: 3
     }
     console.log('Single sig token sending: \n')
-    ERC20Token.transfer(privateKey, transaction)
+    ERC20Token.transfer(privateKey, transaction, tokenAddress)
 }
 
 function sendTokenMulti(nonce, nonce2, txNum){
@@ -37,13 +37,13 @@ function sendTokenMulti(nonce, nonce2, txNum){
         gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
         gasLimit: 8000000,
         data: '',//func.encode(['0xCe39AB30911Eeb024eB6316123339A4893337639', 5, '0x']),
-        to: contractAddress,
+        to: reciever,
         nonce: nonce,
         chainId: 3
     }
 
     console.log('Creating multisig transaction: \n')
-    ERC20Token.transferMulti(privateKey, transaction, tokenAddress, reciever)
+    ERC20Token.transferMulti(privateKey, transaction, tokenAddress, contractAddress)
 
     transaction.nonce = nonce2;
 

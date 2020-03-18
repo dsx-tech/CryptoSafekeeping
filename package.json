@@ -20,6 +20,7 @@
     "ethers": "^4.0.44",
     "module": "^1.2.5",
     "qrcode.vue": "^1.7.0",
+    "qrious": "^4.0.2",
     "quasar": "^1.0.0",
     "vuejs-dialog": "^1.4.1"
   },
