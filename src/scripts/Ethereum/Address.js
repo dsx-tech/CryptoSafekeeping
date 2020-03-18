@@ -1,5 +1,6 @@
 import Contract from './contracts/Contract.js'
-
+import Transaction from './Transaction.js'
+var QRious = require('QRious')
 var ethers = require('ethers')
 
 const contacts = [ 
@@ -17,7 +18,15 @@ export default {
 
 	newAddress() {
       var pKey = ethers.Wallet.createRandom().privateKey
-      alert('New wallets private key: ' + pKey)
+      alert('New wallets private key: ')
+
+
+      var qr = new QRious({
+        element: document.getElementById('qr'),
+        value: pKey
+      })
+
+
       contacts.push({ id: 6, name: 'first wallet', key: pKey })
     },
 
@@ -47,11 +56,8 @@ export default {
         //console.log("factory: " + factory);
         let transaction = await factory.getDeployTransaction(['0x55D73ccA422253a8a287074c6f4857Dd15EFdC46', '0xE704eBE589b6ac907887D1997df7BF69A50D416E'], 2, overrides);
         //console.log(transaction)
-        let signPromise = wallet.sign(transaction);
-        //console.log("wallet : " + wallet.address);
-      
-        signPromise.then((signedTransaction) => console.log("deployed transaction: " + signedTransaction));
 
+        Transaction.signing(wallet, transaction)
       })();
     },
 

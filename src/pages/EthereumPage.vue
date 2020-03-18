@@ -10,18 +10,21 @@
     <button @click="Scan">ScanQRCode</button>
   </q-item>
   <q-item class="flex flex-center">
-    <button @click="DesktopSending">Desktop Sending</button>
+    <button @click="CallMultiSig">Create Multisignature Transaction</button>
   </q-item>
   <q-item class="flex flex-center">
-    <button @click="CallMultiSig">Create Multisignature Transaction</button>
+    <button @click="ConfirmMultiSig">Confirm Multisignature Transaction</button>
   </q-item>
   <q-item class="flex flex-center">
     <button @click="TokenContract">TokenContract</button>
   </q-item>
   <q-item class="flex flex-center">
-    <button @click="ConfirmMultiSig">Confirm Multisignature Transaction</button>
+    <button @click="TokenMultiContractSubmit">Token Multi-Sig Contract Submition</button>
   </q-item>
-  <p>fadffffffffffffffffffffffffffffffffffffffffff
+
+  <canvas id="qr"></canvas>
+
+    <p>
     </p>
     <h5>{{ message }}</h5>
       <div class="q-pa-md" style="max-width: 350px">
@@ -55,5 +58,13 @@
 
   </q-page>
 </template>
+
+<style>
+  #qr{
+     margin-left: 15%;
+    margin-right: 15%;
+     width:70%;
+  }
+</style>
 
 <script src="../scripts/Ethereum/index.js"></script>
