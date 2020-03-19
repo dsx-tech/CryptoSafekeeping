@@ -1,10 +1,7 @@
 module.exports = {
+  
   presets: [
-    '@quasar/babel-preset-app'
-  ],
-  env: {
-    "test": {
-      "plugins": ["@babel/plugin-transform-modules-commonjs"]
-    }
-  }
+    '@quasar/babel-preset-app',
+    "@babel/preset-env"
+  ]
 }

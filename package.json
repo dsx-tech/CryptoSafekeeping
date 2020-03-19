@@ -9,31 +9,29 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
-    "test": "jest --config=./jest.config.js --coverage"
+    "test": "jest"
   },
   "dependencies": {
     "@babel/core": "^7.8.7",
     "@quasar/extras": "^1.6.0",
     "bitcoinjs-lib": "^5.1.7",
     "cordova": "^9.0.0",
-    "electron": "^7.1.14",
-    "ethers": "^4.0.45",
-    "quasar": "^1.9.9",
+    "dotenv": "^8.2.0",
+    "electron": "^7.1.7",
+    "ethers": "^4.0.44",
+    "module": "^1.2.5",
+    "qrcode.vue": "^1.7.0",
+    "quasar": "^1.0.0",
     "vue-qrcode-reader": "^2.1.1",
     "vuejs-dialog": "^1.4.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/node": "^7.8.7",
-    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
     "@babel/preset-env": "^7.8.7",
-    "@quasar/app": "^1.6.0",
+    "@quasar/app": "^1.0.0",
     "@quasar/quasar-app-extension-testing": "^1.0.0",
     "@vue/eslint-config-standard": "^4.0.0",
-    "@vue/test-utils": "^1.0.0-beta.32",
-    "babel-eslint": "^10.1.0",
+    "babel-eslint": "^10.0.1",
     "babel-jest": "^25.1.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "devtron": "^1.4.0",
     "electron-debug": "^3.0.1",
     "electron-devtools-installer": "^2.2.4",
@@ -41,9 +39,7 @@
     "eslint": "^6.8.0",
     "eslint-loader": "^2.1.1",
     "eslint-plugin-vue": "^5.0.0",
-    "jest": "^25.1.0",
-    "jest-transform-stub": "^2.0.0",
-    "vue-jest": "^3.0.5"
+    "jest": "^25.1.0"
   },
   "engines": {
     "node": ">= 8.9.0",

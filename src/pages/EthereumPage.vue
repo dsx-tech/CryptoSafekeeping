@@ -1,13 +1,10 @@
 <template>
   <q-page>
   <q-item class="flex flex-center">
-    <button @click="AddressPage"> AddressList </button>
-  </q-item>
-  <q-item class="flex flex-center">
     <button @click="Address"> New Address </button>
   </q-item>
   <q-item class="flex flex-center">
-    <button @click="CreateMultisigContract"> New Multisignature Address </button>
+    <button @click="MultisigAddress"> New Multisignature Address </button>
   </q-item>
   <q-item class="flex flex-center">
     <button @click="Scan">ScanQRCode</button>
@@ -16,11 +13,16 @@
     <button @click="DesktopSending">Desktop Sending</button>
   </q-item>
   <q-item class="flex flex-center">
-    <button @click="CallMultiSig">CallMultiSig</button>
+    <button @click="CallMultiSig">Create Multisignature Transaction</button>
   </q-item>
   <q-item class="flex flex-center">
-    <button @click="Test">test</button>
+    <button @click="TokenContract">TokenContract</button>
   </q-item>
+  <q-item class="flex flex-center">
+    <button @click="ConfirmMultiSig">Confirm Multisignature Transaction</button>
+  </q-item>
+  <p>fadffffffffffffffffffffffffffffffffffffffffff
+    </p>
     <h5>{{ message }}</h5>
       <div class="q-pa-md" style="max-width: 350px">
     <q-toolbar class="bg-primary text-white shadow-2">
@@ -54,5 +56,4 @@
   </q-page>
 </template>
 
-<script src="../scripts/Ethereum/index.js"></script>-->
-<script src="../scripts/Ethereum/test.js"></script>
+<script src="../scripts/Ethereum/index.js"></script>

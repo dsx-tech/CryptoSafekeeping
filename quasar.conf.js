@@ -1,5 +1,9 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
+//const DotEnv = require('dotenv')
+//const webpack = require('webpack')
+//const envparser = require('./config/envparser')
+
 
 module.exports = function (ctx) {
   return {
@@ -58,6 +62,8 @@ module.exports = function (ctx) {
       showProgress: true,
       gzip: false,
       analyze: false,
+      //envparser for keeping files
+      //env: envparser(),
       // Options below are automatically set depending on the env, set them if you want to override
       // preloadChunks: false,
       // extractCSS: false,
