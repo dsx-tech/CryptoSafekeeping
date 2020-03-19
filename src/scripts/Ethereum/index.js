@@ -23,7 +23,6 @@ const contacts = [
 export default {
   data () {
     return {
-      message: '',
       contacts,
       confirm: false
     }
