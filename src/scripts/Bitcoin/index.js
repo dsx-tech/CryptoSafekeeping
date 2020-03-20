@@ -80,17 +80,14 @@ export default {
       multisigContacts.push({ address: address, key: yourKey, holders: holders, signs: signs, keyList: keyList, name: 'name ' + Math.floor(Math.random() * 1000000) })
     },
 
-    SignTransaction(str1, str2, amount, key) {
+    SignTransaction(str1, str2, amount, key){
       let tx = new bitcoin.TransactionBuilder()
       tx.addInput(str1, 1)
       tx.addOutput(str2, amount * 1000000)
       tx.sign(0, key)
       return tx.build().toHex()
     },
-   Aaa(str1, str2) {
-      
-      return str1 + str2
-    },
+
     /*Scan (key) {
       cordova.plugins.barcodeScanner.scan(
         function (result) {

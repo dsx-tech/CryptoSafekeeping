@@ -1,0 +1,10 @@
+const signTransaction = require('./Bitcoin-test')
+
+let transaction = '02000000013ebc8203037dda39d482bf41ff3be955996c50d9d4f7cfc3d2097a694a7b067d010000006a47304402200758d191d0089a4184f09221b24cfc735cae98ac031de84d229904edb1b955f80220682d87263e0d3c8470138acfd47c9f216e8a9c84b3a919d9808db55ab5e1561901210290f2e84b81060b1db9ceb03c61fd5999561161a5b73a7e64eaaa6d11bb0d4a08ffffffff0100350c00000000001976a914ca0d36044e0dc08a22724efa6f6a07b0ec4c79aa88ac00000000'
+
+
+test("Sign tratsacton test", () => {
+   expect(signTransaction.SignTransaction('7d067b4a697a09d2c3cff7d4d9506c9955e93bff41bf82d439da7d030382bc3e', 
+   '1KRMKfeZcmosxALVYESdPNez1AP1mEtywp', 0.8 )).toEqual(transaction)
+
+})
