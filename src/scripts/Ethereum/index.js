@@ -1,14 +1,9 @@
 var ethers = require('ethers');
-var QRious = require('QRious')
-//var QRCode = require('./qr-code/qrcode.js');
-//import QRcode2 from './qr-code/qrcode.js';
 import Addresses from './Address.js';
 import Transaction from './Transaction.js';
 import QRcode from './QRcode.js'
 import Desktop from './Desktop.js';
 import ERC20Token from './ERC20Token.js';
-import Vue from 'vue';
-//import QrcodeVue from 'qrcode.vue'
 
 
 const contacts = [ 
@@ -22,30 +17,57 @@ const contacts = [
 	{name: 'sixth', key: '0x9EA9EDB02DEA132BBF903299397496E51B6068D12DA040F0BD9FC503F60673B0'}, //0x98773812A261A98Bb73d00EC9B72dEA0BD2a9479
 ]
 
+const multisigContacts = [ {
+  name: 'name 1',
+  address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
+  key: 'to do',
+  holders: 2,
+  signs: 1,
+  keyList: [Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB')]
+},
+{
+  name: 'name 2',
+  address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
+  key: 'to do',
+  holders: 4,
+  signs: 3,
+  keyList: [Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB')]
+},
+{
+  address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
+  key: 'to do',
+  name: 'name 3',
+  holders: 2,
+  signs: 1,
+  keyList: [Buffer.from('039a696dbc7a422faa42688bfef236dd9b81585676a6c2cb185e1db39a195757d9', 'hex'), Buffer.from('026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01', 'hex')]
+}]
+
 export default {
   data () {
     return {
       message: '',
       contacts,
-      confirm: false
+      multisigContacts,
+      inception: false,
+      CountDialog: false,
+      CountRequared: false,
+      countHolders: '',
+      countSigns: '',
+      owners: ''
     }
   },
   
   methods: {
 
     Address () {
-      var qr = new QRious({
-
-        element: document.getElementById('qr'),
-        value: 'fff'
-        
-      })
-      //new Vue({ el: '#components-demo' })
-		  return Addresses.newAddress();
+      let result = Addresses.newAddress();
+      let address = result[0]
+      let pKey = result[1]
+      contacts.push({ address: address, key: pKey, name: 'name ' + Math.floor(Math.random() * 1000000) })
     },
 
-    MultisigAddress() {
-		  return Addresses.newMultisigAddress();
+    MultisigAddress(countHolders, countSigns, owners) {
+		  return Addresses.newMultisigAddress(countHolders, countSigns, owners.split('\n'));
     },
 
     Scan (key) {
@@ -142,6 +164,10 @@ export default {
   
       console.log('Creating multisig transaction: \n')
       ERC20Token.transferMulti(privateKey, transaction, tokenAddress, contractAddress)
+    },
+
+    GoToAddress(name, address, key){
+      this.$router.push ({name: 'BitcoinPage', params:{key: key, name: name, address: address} })
     }
   }
 }
