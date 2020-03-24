@@ -1,8 +1,4 @@
 <template>
-  <q-page>
-  <q-item class="flex flex-center">
-   <p>Start page</p>
-  </q-item>
   <q-page class="row full-height items-center">
     <div class="col text-center">
       <span class="text-subtitle1 text-grey-9">Press the button and scan a qrcode.</span>
