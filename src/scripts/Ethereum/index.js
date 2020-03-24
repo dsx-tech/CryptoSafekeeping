@@ -45,7 +45,6 @@ const multisigContacts = [ {
 export default {
   data () {
     return {
-      message: '',
       contacts,
       multisigContacts,
       inception: false,

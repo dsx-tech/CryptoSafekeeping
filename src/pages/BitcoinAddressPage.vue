@@ -4,22 +4,36 @@
    <p> {{name}} </p>
    <h6> Your address:</h6>
    <p> {{address}} </p>
+    
    <h6> Your private key: </h6>
    <p v-if="show"> {{privateKey}} </p>
    <button @click="show = !show">Hide / Show</button>
    <h6> Your public key:</h6>
    <p> {{publicKey}} </p>
+    
    <q-item class="flex flex-center">
-    <button @click="Scan(key)"> Sign transaction </button>
+   <button @click="Scan(key)"> Sign transaction </button>
    </q-item>
    <button @click="Back()">Back</button>
+          <q-btn color="blue-grey-10" rounded icon="camera_alt" label="Read QRCode"
+        class="full-width" size="lg" @click="turnCameraOn()"
+        v-show="!showCamera"/>
+
+        <p class="text-subtitle1" v-if="result">Last result: <b>{{ result }}</b></p>
+        <div v-if="showCamera">
+
+          <qrcode-stream :camera="camera" @decode="onDecode">
+          </qrcode-stream>
+        </div>
  </div>
 </template>
 
 <script>
-var bitcoin = require('bitcoinjs-lib')
-var testnet = bitcoin.networks.testnet
+import { QrcodeStream } from 'vue-qrcode-reader'
+let bitcoin = require('bitcoinjs-lib')
+let testnet = bitcoin.networks.testnet
 export default{
+  components: { QrcodeStream },
   name:'bitcoinAddress',
   data(){
    return{
@@ -28,20 +42,22 @@ export default{
     privateKey: this.$route.params.key.privateKey.toString('hex'),
     publicKey: this.$route.params.key.publicKey.toString('hex'),
     name: this.$route.params.name,
-    address: this.$route.params.address
+    address: this.$route.params.address,
+     camera: 'auto',
+      result: null,
+      showCamera: false
    }
   },
   methods:{
-   Scan (key) {
+   /*Scan (key) {
       cordova.plugins.barcodeScanner.scan(
         function (result) {
-          var bitcoin = require('bitcoinjs-lib')
-          var text = confirm('We got a barcode\n' +
+          let text = confirm('We got a barcode\n' +
           'Result: ' + result.text + '\n')
-          var tx = new bitcoin.TransactionBuilder()
-          var pos1 = result.text.indexOf('"Input":"') + 8
-          var pos2 = result.text.indexOf('"Output":"') + 9
-          var pos3 = result.text.indexOf('"Amount":"') + 9
+          let tx = new bitcoin.TransactionBuilder()
+          let pos1 = result.text.indexOf('"Input":"') + 8
+          let pos2 = result.text.indexOf('"Output":"') + 9
+          let pos3 = result.text.indexOf('"Amount":"') + 9
           let str1 = result.text.substring(pos1 + 1, result.text.indexOf('"', pos1 + 1))
           alert(str1)
           let str2 = result.text.substring(pos2 + 1, result.text.indexOf('"', pos2 + 1))
@@ -65,9 +81,34 @@ export default{
           }
         }
       )
+    },*/
+    Scan(key) {
+      this.destroyed = false
     },
     Back(){
-        this.$router.push ({name: 'Bitcoin' })
+        this.$router.go(-1)
+    },
+    async onDecode (content) {
+      this.result = content
+      this.turnCameraOff()
+    },
+    turnCameraOn () {
+      this.camera = 'auto'
+      this.showCamera = true
+    },
+    turnCameraOff () {
+      this.camera = 'off'
+      this.showCamera = false
+    },
+     async onInit (promise) {
+
+      try {
+        await promise
+      } catch (error) {
+        console.error(error)
+      } finally {
+        this.loading = false
+      }
     }
   }
 } 
