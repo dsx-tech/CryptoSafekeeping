@@ -88,8 +88,9 @@
 
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader'
+import settings from 'src/scripts/Bitcoin/settings.js'
 let bitcoin = require('bitcoinjs-lib')
-let testnet = bitcoin.networks.testnet
+
 export default{
   components: { QrcodeStream },
   name:'bitcoinAddress',
@@ -128,14 +129,14 @@ export default{
       // let str2 = 'n4VQ5YdHf7hLQ2gWQYYrcxoE5B7nWuDFNF'
       // let amount = 1000000
       // let text = true
-      let tx = bitcoin.Transaction.fromHex(str1, { network: testnet })
+      let tx = bitcoin.Transaction.fromHex(str1, { network: settings.data() })
       alert(tx.getId())
-      const p2ms = bitcoin.payments.p2ms({ m: signs, pubkeys: keyList, network: testnet })
-      const multisig = bitcoin.payments.p2sh({ redeem: p2ms, network: testnet })
+      const p2ms = bitcoin.payments.p2ms({ m: signs, pubkeys: keyList, network: settings.data() })
+      const multisig = bitcoin.payments.p2sh({ redeem: p2ms, network: settings.data() })
       let data = { hash: tx.getId(), index: 1, nonWitnessUtxo: Buffer.from(str1, 'hex'), redeemScript: multisig.redeem.output}
       alert(multisig.redeem.output.toString('hex'))
       alert(tx.getHash().toString('hex'))
-      const psbt = new bitcoin.Psbt({ network: testnet })
+      const psbt = new bitcoin.Psbt({ network: settings.data() })
         .addInput(data)
         .addOutput({
           address: str2,
