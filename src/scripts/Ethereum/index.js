@@ -52,7 +52,8 @@ export default {
       CountRequared: false,
       countHolders: '',
       countSigns: '',
-      owners: ''
+      owners: '',
+      tab: 'addresses',
     }
   },
   
@@ -66,7 +67,8 @@ export default {
     },
 
     MultisigAddress(countHolders, countSigns, owners) {
-		  return Addresses.newMultisigAddress(countHolders, countSigns, owners.split('\n'));
+      let arrOwners = owners.split('\n')
+		  return Addresses.newMultisigAddress(countSigns, arrOwners);
     },
 
     Scan (key) {
@@ -165,8 +167,14 @@ export default {
       ERC20Token.transferMulti(privateKey, transaction, tokenAddress, contractAddress)
     },
 
+    GoToMultisigAddress (key, holders, signs, keyList, address, name) {
+      console.log(keyList);
+     this.$router.push({ name: 'EthereumMultisigPage', params: { key: key, signs: signs, holders: holders, keyList: keyList, address: address, name: name } })
+      // this.$router.push({ path: '/bitcoin/BitcoinMultisigAddressPage'})
+    },
+
     GoToAddress(name, address, key){
-      this.$router.push ({name: 'BitcoinPage', params:{key: key, name: name, address: address} })
+      this.$router.push ({name: 'EthereumPage', params:{key: key, name: name, address: address} })
     }
   }
 }

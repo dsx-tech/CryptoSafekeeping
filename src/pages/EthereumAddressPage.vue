@@ -5,10 +5,8 @@
    <h6> Your address:</h6>
    <p> {{address}} </p>
    <h6> Your private key: </h6>
-   <p v-if="show"> {{privateKey}} </p>
+   <p v-if="show"> {{key}} </p>
    <button @click="show = !show">Hide / Show</button>
-   <h6> Your public key:</h6>
-   <p> {{publicKey}} </p>
    <q-item class="flex flex-center">
     <button @click="Scan(key)"> Sign transaction </button>
    </q-item>
@@ -25,8 +23,8 @@ export default{
    return{
     show: false,
     key: this.$route.params.key,
-    privateKey: this.$route.params.key.privateKey.toString('hex'),
-    publicKey: this.$route.params.key.publicKey.toString('hex'),
+    // privateKey: this.$route.params.key.privateKey.toString('hex'),
+    // publicKey: this.$route.params.key.publicKey.toString('hex'),
     name: this.$route.params.name,
     address: this.$route.params.address
    }
@@ -67,7 +65,7 @@ export default{
       )
     },
     Back(){
-        this.$router.push ({name: 'Bitcoin' })
+        this.$router.push ({name: 'Ethereum' })
     }
   }
 } 

@@ -1,57 +1,5 @@
 <template>
   <q-page>
-  <q-item class="flex flex-center">
-    <button @click="Address"> New Address </button>
-  </q-item>
-  <q-item class="flex flex-center">
-    <button @click="MultisigAddress"> New Multisignature Address </button>
-  </q-item>
-  <q-item class="flex flex-center">
-    <button @click="Scan">ScanQRCode</button>
-  </q-item>
-  <q-item class="flex flex-center">
-    <button @click="CallMultiSig">Create Multisignature Transaction</button>
-  </q-item>
-  <q-item class="flex flex-center">
-    <button @click="ConfirmMultiSig">Confirm Multisignature Transaction</button>
-  </q-item>
-  <q-item class="flex flex-center">
-    <button @click="TokenContract">TokenContract</button>
-  </q-item>
-  <q-item class="flex flex-center">
-    <button @click="TokenMultiContractSubmit">Token Multi-Sig Contract Submition</button>
-  </q-item>
-
-  <div class="q-pa-md" style="max-width: 350px">
-    <q-toolbar class="bg-primary text-white shadow-2">
-      <q-toolbar-title>Addresses</q-toolbar-title>
-    </q-toolbar>
-
-    <q-list bordered>
-      <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
-
-        <q-item-section>
-          <q-item-label @click= "GoToAddress(contact.name, contact.address, contact.key)">{{ contact.name }}</q-item-label>
-        </q-item-section>
-
-      </q-item>
-    </q-list>
-    <q-toolbar class="bg-primary text-white shadow-2">
-      <q-toolbar-title>Multisig addresses</q-toolbar-title>
-    </q-toolbar>
-    </q-list>
-     <q-list bordered>
-      <q-item v-for="multisigContact in multisigContacts" :key="multisigContact.id" class="q-my-sm" clickable v-ripple>
-
-        <q-item-section>
-          <q-item-label @click= "GoToMultisigAddress(multisigContact.key, multisigContact.holders, multisigContact.signs, multisigContact.keyList, multisigContact.address, multisigContact.name)">{{ multisigContact.name }}</q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
-    <q-item class="flex flex-center">
-      <button @click="inception = true"> New Address </button>
-    </q-item>
-  </div>
 
   <q-dialog v-model="inception">
       <q-card>
@@ -99,6 +47,54 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+  <div class="q-pa-md" style="max-width: 600px">
+    <q-card>
+      <q-tabs
+        v-model="tab"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="justify"
+      >
+        <q-tab name="addresses" label="Addresses" />
+        <q-tab name="multisig" label="Multisig addresses" />
+      </q-tabs>
+
+      <q-separator />
+
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="addresses">
+          <q-list>
+             <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
+
+           <q-item-section>
+          <q-item-label @click= "GoToAddress(contact.name, contact.address, contact.key)">{{ contact.name }}</q-item-label>
+        </q-item-section>
+
+      </q-item>
+     </q-list>
+          
+        </q-tab-panel>
+
+        <q-tab-panel name="multisig">
+           <q-list>
+                 <q-item v-for="multisigContact in multisigContacts" :key="multisigContact.id" class="q-my-sm" clickable v-ripple>
+               <q-item-section>
+                  <q-item-label @click= "GoToMultisigAddress(multisigContact.key, multisigContact.holders, multisigContact.signs, multisigContact.keyList, multisigContact.address, multisigContact.name)">{{ multisigContact.name }}</q-item-label>
+               </q-item-section>
+                 </q-item>
+                </q-list>
+        </q-tab-panel>
+
+      </q-tab-panels>
+    </q-card>
+    <q-item class="flex flex-center">
+      <button @click="inception = true"> New Address </button>
+    </q-item>
+  </div>
+
     <canvas id="qr"></canvas>
   </q-page>
     

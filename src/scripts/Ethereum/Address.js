@@ -30,7 +30,7 @@ export default {
       return[address, pKey]
     },
 
-    newMultisigAddress(countHolders, owners) {
+    newMultisigAddress(countSigns, owners) {
       //to do: fix double creating wallet
       let wallet_for_pk = ethers.Wallet.createRandom();
       let creator = wallet_for_pk.privateKey;
@@ -51,7 +51,7 @@ export default {
         }
 
         let factory = new ethers.ContractFactory(abi, bytecode, wallet);
-        let transaction = factory.getDeployTransaction(owners, countHolders, overrides);
+        let transaction = factory.getDeployTransaction(owners, countSigns, overrides);
 
         Transaction.signing(wallet, transaction)
 
