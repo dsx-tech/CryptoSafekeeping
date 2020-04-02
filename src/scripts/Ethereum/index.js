@@ -7,39 +7,36 @@ import ERC20Token from './ERC20Token.js';
 
 
 const contacts = [ 
-  {name: 'first', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a'}, //0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
+  {name: 'first', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a', address: 'test address'}, //0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
     //4 ethers
-  {name: 'second', key: '0x1778b368d6847f01cc48dc891598675db61500b31cfe6448eb564ccfdcab698c'}, // 0x00F7357E503B6cE0622Cf5311739dA27EDF4a875
+  {name: 'second', key: '0x1778b368d6847f01cc48dc891598675db61500b31cfe6448eb564ccfdcab698c', address: 'test address'}, // 0x00F7357E503B6cE0622Cf5311739dA27EDF4a875
     //3 ethers
-  {name: 'third', key: '0x8358a123d279423f239dc2cbc5dede46975f9de654d800f594cbab4ae8faea34'}, //0xCe39AB30911Eeb024eB6316123339A4893337639
-  {name: 'fourth', key: '0x51cf48d3ac567c2cf65540d49f92cb8f50bba3a8b9b329814d96ad188dd70da8'}, //0xE704eBE589b6ac907887D1997df7BF69A50D416E
-	{name: 'fifth', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a'},
-	{name: 'sixth', key: '0x9EA9EDB02DEA132BBF903299397496E51B6068D12DA040F0BD9FC503F60673B0'}, //0x98773812A261A98Bb73d00EC9B72dEA0BD2a9479
+  {name: 'third', key: '0x8358a123d279423f239dc2cbc5dede46975f9de654d800f594cbab4ae8faea34', address: 'test address'}, //0xCe39AB30911Eeb024eB6316123339A4893337639
+  {name: 'fourth', key: '0x51cf48d3ac567c2cf65540d49f92cb8f50bba3a8b9b329814d96ad188dd70da8', address: 'test address'}, //0xE704eBE589b6ac907887D1997df7BF69A50D416E
+	{name: 'fifth', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a', address: 'test address'},
+	{name: 'sixth', key: '0x9EA9EDB02DEA132BBF903299397496E51B6068D12DA040F0BD9FC503F60673B0', address: 'test address'}, //0x98773812A261A98Bb73d00EC9B72dEA0BD2a9479
 ]
 
 const multisigContacts = [ {
   name: 'name 1',
   address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
-  key: 'to do',
   holders: 2,
   signs: 1,
-  keyList: [Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB')]
+  ownersList: ['n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C', 'mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB']
 },
 {
   name: 'name 2',
   address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
-  key: 'to do',
-  holders: 4,
-  signs: 3,
-  keyList: [Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB')]
+  holders: 2,
+  signs: 1,
+  ownersList: ['n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C', 'mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB']
 },
 {
   address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
-  key: 'to do',
   name: 'name 3',
   holders: 2,
   signs: 1,
-  keyList: [Buffer.from('039a696dbc7a422faa42688bfef236dd9b81585676a6c2cb185e1db39a195757d9', 'hex'), Buffer.from('026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01', 'hex')]
+  ownersList: ['n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C', 'mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB']
 }]
 
 export default {
@@ -52,23 +49,33 @@ export default {
       CountRequared: false,
       countHolders: '',
       countSigns: '',
-      owners: '',
       tab: 'addresses',
+      walletName: ''
     }
   },
   
   methods: {
 
-    Address () {
+    Address (walletName) {
       let result = Addresses.newAddress();
       let address = result[0]
       let pKey = result[1]
-      contacts.push({ address: address, key: pKey, name: 'name ' + Math.floor(Math.random() * 1000000) })
+      contacts.push({ address: address, key: pKey, name: walletName })
     },
 
-    MultisigAddress(countHolders, countSigns, owners) {
-      let arrOwners = owners.split('\n')
-		  return Addresses.newMultisigAddress(countSigns, arrOwners);
+    MultisigAddress(walletName, countHolders, countSigns) {
+      let arrOwners = [];
+      
+      for (let i = 0; i < countHolders; i++) {
+        let newKey = prompt('Enter public key')
+        alert(newKey)
+        console.log(newKey)
+        arrOwners.push(newKey)
+      }
+
+      this.$router.push({name: 'EthereumMultisigCreation'})
+      Addresses.newMultisigAddress(countSigns, arrOwners);
+      multisigContacts.push({name: walletName, address: 'undefined', holders: countHolders, signs: countSigns, ownersList: arrOwners})
     },
 
     Scan (key) {
@@ -167,14 +174,16 @@ export default {
       ERC20Token.transferMulti(privateKey, transaction, tokenAddress, contractAddress)
     },
 
-    GoToMultisigAddress (key, holders, signs, keyList, address, name) {
-      console.log(keyList);
-     this.$router.push({ name: 'EthereumMultisigPage', params: { key: key, signs: signs, holders: holders, keyList: keyList, address: address, name: name } })
-      // this.$router.push({ path: '/bitcoin/BitcoinMultisigAddressPage'})
+    GoToMultisigAddress (holders, signs, ownersList, address, name) {
+     this.$router.push({ name: 'EthereumMultisigPage', params: {signs: signs, holders: holders, ownersList: ownersList, address: address, name: name } })
     },
 
     GoToAddress(name, address, key){
       this.$router.push ({name: 'EthereumPage', params:{key: key, name: name, address: address} })
-    }
+    },
+
+    GoToCreationMultisigAddress (walletName) {
+      this.$router.push({ name: 'EthereumMultisigCreation', params: {walletName: walletName} })
+     },
   }
 }

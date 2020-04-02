@@ -18,13 +18,10 @@
 var bitcoin = require('bitcoinjs-lib')
 var testnet = bitcoin.networks.testnet
 export default{
-  name:'bitcoinAddress',
   data(){
    return{
     show: false,
     key: this.$route.params.key,
-    // privateKey: this.$route.params.key.privateKey.toString('hex'),
-    // publicKey: this.$route.params.key.publicKey.toString('hex'),
     name: this.$route.params.name,
     address: this.$route.params.address
    }

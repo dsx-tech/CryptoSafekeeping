@@ -18,13 +18,13 @@ export default {
     signPromise.then((signedTransaction) => {
                     console.log('Singed Transaction: \n' + signedTransaction)
 
-                          var qr = new QRious({
-
-                            element: document.getElementById('qr'),
-                            value: signedTransaction,
-                            level: 'H',
-                            size: 1000,
-                          })
+                    var qr = new QRious({
+                      element: document.getElementById('qr'),
+                      value: signedTransaction,
+                      level: 'H',
+                      size: 1000,
+                    })
+                    
 
                     return signedTransaction
 
