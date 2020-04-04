@@ -1,10 +1,11 @@
 import { QrcodeStream } from 'vue-qrcode-reader'
+import settings from './settings.js'
 let bitcoin = require('bitcoinjs-lib')
-let testnet = bitcoin.networks.testnet
+
 const contacts = [ {
   name: 'name 1',
   address: '1NeJEFzY8PbVS9RvYPfDP93iqXxHjav791',
-  key: bitcoin.ECPair.makeRandom({ network: testnet })
+  key: bitcoin.ECPair.makeRandom({ network: settings.data() })
 },
 {
   name: 'name 2',
@@ -14,7 +15,7 @@ const contacts = [ {
 const multisigContacts = [ {
   name: 'name 1',
   address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
-  key: bitcoin.ECPair.makeRandom({ network: testnet }),
+  key: bitcoin.ECPair.makeRandom({ network: settings.data() }),
   holders: 2,
   signs: 1,
   keyList: [{ key: Buffer.from('n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C'), name: 'Anna' }, { key: Buffer.from('mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB'), name: 'Fred' }]
@@ -30,7 +31,7 @@ const multisigContacts = [ {
 {
   address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
   name: 'name 3',
-  key: bitcoin.ECPair.fromWIF('cP1tkWhhMbtuFPVpRcjS8s8Xae15gvUhchXWiwcWXJGfB7SCVHhq', testnet),
+  key: bitcoin.ECPair.fromWIF('cP1tkWhhMbtuFPVpRcjS8s8Xae15gvUhchXWiwcWXJGfB7SCVHhq', settings.data()),
   holders: 2,
   signs: 1,
   keyList: [{ key: Buffer.from('039a696dbc7a422faa42688bfef236dd9b81585676a6c2cb185e1db39a195757d9', 'hex'), name: 'James' }, { key: Buffer.from('026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01', 'hex'), name: 'Alice' }]
@@ -48,16 +49,18 @@ export default {
       countSigns: '',
       tab: 'addresses',
       splitterModel: 20,
+      message: settings.data()
     }
   },
   methods: {
     Address () {
       const keyPair = bitcoin.ECPair.makeRandom()
-      const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: testnet })
+      const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: settings.data() })
       contacts.push({ address: address, key: keyPair, name: 'name ' + Math.floor(Math.random() * 1000000) })
     },
     MultisigAddress (holders, signs) {
       let keyList = []
+      var yourKey = bitcoin.ECPair.makeRandom({ network: settings.data() })
       alert('Your public key: ' + yourKey.publicKey.toString('hex'))
       console.log('Your public key: ' + yourKey.publicKey.toString('hex'))
       alert('Your private key: ' + yourKey.privateKey.toString('hex'))
@@ -73,8 +76,8 @@ export default {
       }
       const pubkeys = keyList.map(hex => Buffer.from(hex, 'hex'))
       const { address } = bitcoin.payments.p2sh({
-        redeem: bitcoin.payments.p2ms({ m: signs, pubkeys, network: testnet })
-      }, testnet)
+        redeem: bitcoin.payments.p2ms({ m: signs, pubkeys, network: settings.data() })
+      }, settings.data())
       alert(address)
       console.log(address)
       multisigContacts.push({ address: address, key: yourKey, holders: holders, signs: signs, keyList: keyList, name: 'name ' + Math.floor(Math.random() * 1000000) })

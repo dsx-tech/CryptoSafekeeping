@@ -30,8 +30,9 @@
 
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader'
+import settings from 'src/scripts/Bitcoin/settings.js'
 let bitcoin = require('bitcoinjs-lib')
-let testnet = bitcoin.networks.testnet
+
 export default{
   components: { QrcodeStream },
   name:'bitcoinAddress',
