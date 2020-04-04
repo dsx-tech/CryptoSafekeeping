@@ -18,6 +18,7 @@ const routes = [
       },
       { path: '/ethereum', component: () => import('pages/EthereumPage.vue') },
       { path: '/startPage', component: () => import('pages/Index.vue') },
+      { path: '/addresses', component: () => import('pages/addresses.vue') },
     ]
   }
 ]

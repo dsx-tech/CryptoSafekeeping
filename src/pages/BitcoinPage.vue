@@ -1,7 +1,6 @@
 
 <template>
   <q-page>
-  <p>{{ message }}</p>
   <q-dialog v-model="inception">
       <q-card>
         <q-card-section>

@@ -35,6 +35,14 @@
             <q-item-label>Bitcoin</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item to="/addresses" clickable>
+          <q-item-section avatar>
+            <q-icon name="sentiment_satisfied_alt" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Addresses</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item to="/ethereum" clickable>
           <q-item-section avatar>
             <q-icon name="sentiment_satisfied" />

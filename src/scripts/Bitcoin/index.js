@@ -49,7 +49,6 @@ export default {
       countSigns: '',
       tab: 'addresses',
       splitterModel: 20,
-      message: settings.data()
     }
   },
   methods: {
