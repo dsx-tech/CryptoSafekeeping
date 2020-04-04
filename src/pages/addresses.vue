@@ -3,6 +3,10 @@
     <p>{{ message }}</p>
     <q-btn @click="Address()" label="newAddress" />
     <q-btn @click="writeFile()" label="click" />
+    <q-btn @click="readButton()" label="read" />
+    <q-btn @click="writeAppend()" label="write to the end" />
+    <q-btn @click="readTest()" label="test reading" />
+    <q-btn @click="clear()" label="clear file" />
     <q-list>
              <q-item v-for="(address, idx) in addresses" :key="idx" class="q-my-sm" clickable v-ripple {{ address.name }}>
 
@@ -14,6 +18,7 @@
 
 <script>
 import settings from '../scripts/Bitcoin/settings.js'
+import File from '../scripts/filesystem.js' 
 
 function read(fileName) {
   return new Promise((resolve, reject) => {
@@ -51,7 +56,8 @@ function read(fileName) {
           var reader = new FileReader();
 
           reader.onloadend = function(e) {
-            console.log("Share the results... " + JSON.parse(this.result));
+            console.log("Sharing the result...");
+            console.log(JSON.parse(this.result));
             resolve(JSON.parse(this.result));
           };
 
@@ -150,6 +156,25 @@ export default {
       let text = { address: address, key: keyPair, name: 'name ' + Math.floor(Math.random() * 1000000) }
       write('Addresses.json', text);
     },
+
+    readButton(){
+      let text = read('Addresses.json');
+      console.log(text);
+    },
+
+    writeAppend(){
+      const keyPair = bitcoin.ECPair.makeRandom()
+      const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: settings.data() })
+      let text = { address: address, key: keyPair, name: 'name ' + Math.floor(Math.random() * 1000000) }
+      File.write('Addresses.json', text);
+    },
+
+    readTest(){
+      console.log(File.read('Addresses.json'))
+    },
+     clear(){
+       File.clear('Addresses.json')
+     }
 
   }
 };

@@ -53,6 +53,11 @@ export default {
       walletName: ''
     }
   },
+
+  
+  created(){
+    alert('created!')
+  },
   
   methods: {
 

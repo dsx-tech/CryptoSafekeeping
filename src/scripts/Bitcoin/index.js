@@ -51,6 +51,7 @@ export default {
       splitterModel: 20,
     }
   },
+
   methods: {
     Address () {
       const keyPair = bitcoin.ECPair.makeRandom()
