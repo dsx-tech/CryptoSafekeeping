@@ -1,5 +1,6 @@
 import Contract from './contracts/Contract.js'
-
+import Transaction from './Transaction.js'
+var QRious = require('QRious')
 var ethers = require('ethers')
 
 const contacts = [ 
@@ -16,23 +17,31 @@ const contacts = [
 export default {
 
 	newAddress() {
-      var pKey = ethers.Wallet.createRandom().privateKey
-      alert('New wallets private key: ' + pKey)
-      contacts.push({ id: 6, name: 'first wallet', key: pKey })
+      let wallet = ethers.Wallet.createRandom();
+      let pKey = wallet.privateKey;
+      let address = wallet.address;
+      alert('New wallets private key: ')
+
+
+      let qr = new QRious({
+        element: document.getElementById('qr'),
+        value: pKey
+      })
+      return[address, pKey]
     },
 
-    newMultisigAddress() {
+    newMultisigAddress(countHolders, owners) {
+      //to do: fix double creating wallet
+      let wallet_for_pk = ethers.Wallet.createRandom();
+      let creator = wallet_for_pk.privateKey;
+      let address = wallet_for_pk.address;
       let contract = new Contract()
       let abi = contract.abiJSON
       let bytecode = contract.BYTECODE
-
+      //to do: changing provider from ropsten
 	    let provider = ethers.getDefaultProvider('ropsten');
+      let wallet = new ethers.Wallet(creator, provider);
       
-      let privateKey = '0x51cf48d3ac567c2cf65540d49f92cb8f50bba3a8b9b329814d96ad188dd70da8';
-      
-      let wallet = new ethers.Wallet(privateKey, provider);
-      
-      (async function() {
 
         let overrides = {
             gasLimit: 8000000,
@@ -41,18 +50,11 @@ export default {
             chainId: 3
         }
 
-        // Create an instance of a Contract Factory
         let factory = new ethers.ContractFactory(abi, bytecode, wallet);
-        
-        //console.log("factory: " + factory);
-        let transaction = await factory.getDeployTransaction(['0x55D73ccA422253a8a287074c6f4857Dd15EFdC46', '0xE704eBE589b6ac907887D1997df7BF69A50D416E'], 2, overrides);
-        //console.log(transaction)
-        let signPromise = wallet.sign(transaction);
-        //console.log("wallet : " + wallet.address);
-      
-        signPromise.then((signedTransaction) => console.log("deployed transaction: " + signedTransaction));
+        let transaction = factory.getDeployTransaction(owners, countHolders, overrides);
 
-      })();
+        Transaction.signing(wallet, transaction)
+
     },
 
     newMultisigAddressFrom(privateKey) {

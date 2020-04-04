@@ -1,4 +1,6 @@
 var ethers = require('ethers')
+var QRious = require('QRious')
+
 import Contract from './contracts/Contract.js'
 
 
@@ -14,7 +16,18 @@ export default {
     let signPromise = wallet.sign(transaction)
 
     signPromise.then((signedTransaction) => {
-                    console.log(signedTransaction)
+                    console.log('Singed Transaction: \n' + signedTransaction)
+
+                          var qr = new QRious({
+
+                            element: document.getElementById('qr'),
+                            value: signedTransaction,
+                            level: 'H',
+                            size: 1000,
+                          })
+
+                    return signedTransaction
+
                     
                     //return signedTransaction
                     
@@ -34,26 +47,23 @@ export default {
   },
 
   //to do arguments: wallet, transaction
-  createMultiSigTransaction(wallet){
-    //TO DO scan from QR-code
-    let contractAddress = "0x6692d46B5319a0AE807264155C6725EF951378eD";
-
+  createMultiSigTransaction(privateKey, transaction, contractAddress){
+    let provider = ethers.getDefaultProvider('ropsten');
+    
+    let wallet = new ethers.Wallet(privateKey, provider);
+    
     var abiJSON = new Contract().abiJSON
     var iface = new ethers.utils.Interface(abiJSON);
     var func = iface.functions.submitTransaction;
-    var transaction = {
-        gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
-        gasLimit: 8000000,
-        data: func.encode(['0xCe39AB30911Eeb024eB6316123339A4893337639', 5, '0x']),
-        to: contractAddress,
-        nonce: 12,
-        chainId: 3
-    }
+
+    transaction.data = func.encode([transaction.to, transaction.value, transaction.data]);
+    transaction.to = contractAddress;
+    transaction.value = 0;
 
     this.signing(wallet, transaction)
   },
 
-  confirmMultisigTransaction(privateKey, transaction, txNumber){
+  confirmMultisigTransaction(privateKey, transaction, contractAddress, txNumber){
     let provider = ethers.getDefaultProvider('ropsten');
     
     let wallet = new ethers.Wallet(privateKey, provider);
@@ -61,7 +71,10 @@ export default {
     var abiJSON = new Contract().abiJSON
     var iface = new ethers.utils.Interface(abiJSON);
     var func = iface.functions.confirmTransaction;
+
     transaction.data = func.encode([txNumber]);
+    transaction.to = contractAddress;
+    transaction.value = 0;
 
     this.signing(wallet, transaction)
   },
