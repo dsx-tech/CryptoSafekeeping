@@ -48,6 +48,8 @@
             </div>
         </div>
 
+        <button @click="codeCordova()">for cordova</button>
+
 
   </q-page>
 
@@ -85,6 +87,7 @@
 
 <script>
 import Addresses from '../scripts/Ethereum/Address.js'
+import QRcode from '../scripts/Ethereum/QRcode.js'
 import { QrcodeStream } from 'vue-qrcode-reader'
 export default {
   name: 'PageIndex',
@@ -108,8 +111,13 @@ export default {
       this.turnCameraOff()
     },
     turnCameraOn () {
-      this.camera = 'auto'
-      this.showCamera = true
+      if (this.$q.platform.is.mobile){
+        return QRcode.Scan();
+      }
+      else {
+        this.camera = 'auto'
+        this.showCamera = true
+      }
     },
     turnCameraOff () {
       this.camera = 'off'
@@ -145,6 +153,10 @@ export default {
       Addresses.newMultisigAddress(countSigns, arrOwners);
       multisigContacts.push({name: walletName, address: 'undefined', holders: countHolders, signs: countSigns, ownersList: arrOwners})
     },
+
+    codeCordova(){
+      return QRcode.Scan();
+    }
   }
 }
 </script>

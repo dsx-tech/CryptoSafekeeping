@@ -20,7 +20,6 @@ export default {
       let wallet = ethers.Wallet.createRandom();
       let pKey = wallet.privateKey;
       let address = wallet.address;
-      alert('New wallets private key: ')
 
 
       let qr = new QRious({

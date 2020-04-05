@@ -173,7 +173,7 @@ export default {
       console.log(File.read('Addresses.json'))
     },
      clear(){
-       File.clear('Addresses.json')
+       File.clear('SingleSig.json')
      }
 
   }

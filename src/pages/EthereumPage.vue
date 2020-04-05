@@ -76,10 +76,4 @@
     
 </template>
 
-<style>
-  #qr{
-  }
-
-</style>
-
 <script src="../scripts/Ethereum/index.js"></script>
