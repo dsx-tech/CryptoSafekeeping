@@ -1,33 +1,50 @@
 <template>
  <div class="q-pa-sm">
-   <h6> Name:</h6>
-   <p> {{name}} </p>
-   <h6> Your address:</h6>
-   <p> {{address}} </p>
-   <h6> Your private key: </h6>
-   <p v-if="show"> {{key}} </p>
-   <button @click="show = !show">Hide / Show</button>
+  <div v-if="showCode">
+    <canvas id="qr">
+    </canvas>
+  </div>
+  <h6> Name:</h6>
+  <p> {{name}} </p>
+  <h6> Your address:</h6>
+  <p> {{address}} </p>
+  <h6> Your private key: </h6>
+  <p v-if="show"> {{key}} </p>
+  <div class="row justify-around">
+    <q-btn color="black" label="Show" @click="show = !show" class="col-4.5"/>
+
+    <q-btn color="black" label="Show As Qr-code" @click="showcode(key)"  class="col-4.5"/>
+  </div>
    <q-item class="flex flex-center">
-    <button @click="Scan(key)"> Sign transaction </button>
+    <q-btn color="black" label="Sign transaction" @click="scan(key)"/>
    </q-item>
-   <button @click="Back()">Back</button>
+   <q-btn color="black" label="Back" @click="back()"/>
  </div>
 </template>
-
+<style>
+  #qr{
+    height: 200px
+  }
+</style>
 <script>
+var QRious = require('QRious')
+
 var bitcoin = require('bitcoinjs-lib')
 var testnet = bitcoin.networks.testnet
 export default{
+  
+
   data(){
    return{
     show: false,
     key: this.$route.params.key,
     name: this.$route.params.name,
-    address: this.$route.params.address
+    address: this.$route.params.address,
+    showCode: false
    }
   },
   methods:{
-   Scan (key) {
+   scan (key) {
       cordova.plugins.barcodeScanner.scan(
         function (result) {
           var bitcoin = require('bitcoinjs-lib')
@@ -61,8 +78,20 @@ export default{
         }
       )
     },
-    Back(){
+    back(){
         this.$router.push ({name: 'Ethereum' })
+    },
+    showcode(key){
+      this.showCode = true;
+      var qr = new QRious({
+        element: document.getElementById('qr'),
+        value: key,
+        level: 'H',
+        size: 1000,
+      })
+
+      
+
     }
   }
 } 
