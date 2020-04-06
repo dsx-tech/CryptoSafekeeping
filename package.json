@@ -24,6 +24,7 @@
     "ethers": "^4.0.44",
     "module": "^1.2.5",
     "qrcode.vue": "^1.7.0",
+    "qrious": "^4.0.2",
     "quasar": "^1.0.0",
     "vue-qrcode-reader": "^2.1.1",
     "vue-resource": "^1.5.1",
