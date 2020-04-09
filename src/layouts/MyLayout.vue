@@ -10,12 +10,10 @@
           icon="menu"
           aria-label="Menu"
         />
-
         <q-toolbar-title>
           Crypto Safe keeping
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 

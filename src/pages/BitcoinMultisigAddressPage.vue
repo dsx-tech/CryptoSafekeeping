@@ -4,22 +4,6 @@
    <p> {{name}} </p>
    <h6> Your address:</h6>
    <p> {{address}} </p>
-   <!--<h6> Your private key: </h6>
-   <p v-if="show"> {{privateKey}} </p>
-   <button @click="show = !show">Hide / Show</button>
-    <h6> Your public key:</h6>
-   <p> {{publicKey}} </p>
-   <q-item class="flex flex-center">
-      <button @click="ExportKey(publicKey)"> Export your public key </button>
-   </q-item>
-  <h6>Keys:</h6>
-   <ul>
-       <li v-for="item in keyList" :key="item.address">{{ item.key.toString('hex') }}</li>
-   </ul>
-   <q-item class="flex flex-center">
-    <button @click="ScanForMultisig(key, holders, signs, BufferKeyList)"> Sign transaction </button>
-  </q-item> -->
-
     <q-toolbar class="bg-primary text-white shadow-2">
       <q-toolbar-title>Keys</q-toolbar-title>
     </q-toolbar>
@@ -82,7 +66,7 @@
       </q-btn>
     </q-item>
   </q-list>
-  <button @click="Back()">Back</button>
+  <button class="nextButton" @click="Back()">Back</button>
  </div>
 </template>
 

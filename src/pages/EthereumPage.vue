@@ -69,6 +69,10 @@
       <q-item class="flex flex-center">
         <button @click="inception = true"> New Address </button>
       </q-item>
+
+      <q-item class="flex flex-center">
+        <button @click="GoBack()"> Back </button>
+      </q-item>
       
     </div>
     

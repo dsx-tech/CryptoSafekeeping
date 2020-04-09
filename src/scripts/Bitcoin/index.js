@@ -1,8 +1,9 @@
 import { QrcodeStream } from 'vue-qrcode-reader'
 import settings from './settings.js'
+import managBD from './ManagBD.js'
 let bitcoin = require('bitcoinjs-lib')
 
-const contacts = [ {
+/*const contacts = [ {
   name: 'name 1',
   address: '1NeJEFzY8PbVS9RvYPfDP93iqXxHjav791',
   key: bitcoin.ECPair.makeRandom({ network: settings.data() })
@@ -35,13 +36,13 @@ const multisigContacts = [ {
   holders: 2,
   signs: 1,
   keyList: [{ key: Buffer.from('039a696dbc7a422faa42688bfef236dd9b81585676a6c2cb185e1db39a195757d9', 'hex'), name: 'James' }, { key: Buffer.from('026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01', 'hex'), name: 'Alice' }]
-}]
+}]*/
 export default {
   components: { QrcodeStream },
   data () {
     return {
-      contacts,
-      multisigContacts,
+      contacts:[],
+      multisigContacts:[],
       inception: false,
       CountDialog: false,
       CountRequared: false,
@@ -49,16 +50,25 @@ export default {
       countSigns: '',
       tab: 'addresses',
       splitterModel: 20,
+      walletName: ''
     }
   },
 
+  beforeMount(){
+    this.contacts = managBD.DownLoadAddresses();
+    this.multisigContacts = managBD.DownLoadMultidigAdresses();
+  },
+
   methods: {
-    Address () {
+
+    Address (name) {
       const keyPair = bitcoin.ECPair.makeRandom()
       const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: settings.data() })
-      contacts.push({ address: address, key: keyPair, name: 'name ' + Math.floor(Math.random() * 1000000) })
+      this.contacts.push({ address: address, key: keyPair, name: name })
+      alert(keyPair.toWIF())
+      managBD.InsertAddressDb(address, name.toString(), keyPair.toWIF())
     },
-    MultisigAddress (holders, signs) {
+    MultisigAddress (holders, signs, name) {
       let keyList = []
       var yourKey = bitcoin.ECPair.makeRandom({ network: settings.data() })
       alert('Your public key: ' + yourKey.publicKey.toString('hex'))
@@ -69,7 +79,7 @@ export default {
       for (let i = 0; i < holders - 1; i++) {
         let newKey = prompt('Enter public key')
         // let newKey = '026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01' //  --- для electron, так как там  не работает prompt
-        let publicKeyBuffer = Buffer.from(newKey, 'hex')
+        let publicKeyBuffer = newKey
         alert(newKey)
         console.log(newKey)
         keyList.push(publicKeyBuffer)
@@ -80,7 +90,9 @@ export default {
       }, settings.data())
       alert(address)
       console.log(address)
-      multisigContacts.push({ address: address, key: yourKey, holders: holders, signs: signs, keyList: keyList, name: 'name ' + Math.floor(Math.random() * 1000000) })
+      let json = JSON.stringify(keyList);
+      multisigContacts.push({ address: address, key: yourKey, holders: holders, signs: signs, keyList: keyList, name: name })
+      managBD.InsertMultisigDb()
     },
 
     SignTransaction(str1, str2, amount, key){
@@ -129,5 +141,11 @@ export default {
     GoToAddress (name, address, key) {
       this.$router.push({ name: 'BitcoinPage', params: { key: key, name: name, address: address } })
     },
+    GoBack () {
+      this.$router.go(-1)
+    },
+    GoToSettings (name){
+      this.$router.push({ name: 'SettingsPage', params: {name: name} })
+    }
   }
 }

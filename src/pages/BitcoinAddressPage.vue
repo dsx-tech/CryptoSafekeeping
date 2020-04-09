@@ -7,27 +7,19 @@
     
    <h6> Your private key: </h6>
    <p v-if="show"> {{privateKey}} </p>
-   <button @click="show = !show">Hide / Show</button>
+   <button class="nextButton" @click="show = !show">Show/Hide</button>
    <h6> Your public key:</h6>
    <p> {{publicKey}} </p>
     
    <q-item class="flex flex-center">
-   <button @click="Scan(key)"> Sign transaction </button>
+   <button class="nextButton" @click="Scan(key)"> Sign transaction </button>
    </q-item>
-   <button @click="Back()">Back</button>
-          <q-btn color="blue-grey-10" rounded icon="camera_alt" label="Read QRCode"
-        class="full-width" size="lg" @click="turnCameraOn()"
-        v-show="!showCamera"/>
-
-        <p class="text-subtitle1" v-if="result">Last result: <b>{{ result }}</b></p>
-        <div v-if="showCamera">
-
-          <qrcode-stream :camera="camera" @decode="onDecode">
-          </qrcode-stream>
-        </div>
+   <button class="nextButton" @click="Back()">Back</button>
  </div>
 </template>
+<style>
 
+</style>
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader'
 import settings from 'src/scripts/Bitcoin/settings.js'

@@ -4,15 +4,24 @@
   <q-dialog v-model="inception">
       <q-card>
         <q-card-section>
+          <div class="text-h6">Enter wallet name</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input dense v-model="walletName" autofocus @keyup.enter="CountDialog = false"  />
+        </q-card-section>
+
+        <q-card-section>
           <div class="text-h6">Choose wallet type</div>
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Standart" @click="Address" v-close-popup/>
-          <q-btn flat label="Multisig" @click="CountDialog = true" v-close-popup/>
+          <q-btn flat label="Standart" @click="Address(String(walletName))" v-close-popup/>
+          <q-btn flat label="Multisig" @click="GoToSettings(String(walletName))" v-close-popup/>
         </q-card-actions>
       </q-card>
     </q-dialog>
+
     <q-dialog v-model="CountDialog" persistent>
       <q-card style="min-width: 350px">
         <q-card-section>
@@ -25,7 +34,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" v-close-popup />
-          <q-btn flat label="Ок" @click="CountRequared = true" v-close-popup />
+          <q-btn flat label="Ок" @click="GoToSettings()" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -41,7 +50,7 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" v-close-popup />
-          <q-btn flat label="Ok" @click="MultisigAddress(Number(countHolders), Number(countSigns))" v-close-popup />
+          <q-btn flat label="Ok" @click="GoToSettings()" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -91,10 +100,11 @@
       </q-tab-panels>
     </q-card>
        <q-item class="flex flex-center">
-      <button @click="inception = true"> New Address </button>
+      <button class="nextButton" @click="inception = true"> New Address </button>
     </q-item>
+    <button class="nextButton" @click="GoBack()"> Back </button>
   </div>
   </q-page>
 </template>
-<script src="../scripts/Bitcoin/index.js"></script>-->
+<script src="../scripts/Bitcoin/index.js"></script>
 

@@ -194,5 +194,8 @@ export default {
     GoToCreationMultisigAddress (walletName) {
       this.$router.push({ name: 'EthereumMultisigCreation', params: {walletName: walletName} })
      },
+     GoBack () {
+      this.$router.go(-1)
+    },
   }
 }
