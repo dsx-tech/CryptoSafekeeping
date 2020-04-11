@@ -67,12 +67,10 @@
       </q-card>
 
       <q-item class="flex flex-center">
-        <button @click="inception = true"> New Address </button>
+        <button class="nextButton" @click="inception = true"> New Address </button>
       </q-item>
 
-      <q-item class="flex flex-center">
-        <button @click="GoBack()"> Back </button>
-      </q-item>
+        <button class="nextButton" @click="GoBack()"> Back </button>
       
     </div>
     

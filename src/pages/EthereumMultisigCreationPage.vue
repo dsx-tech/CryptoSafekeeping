@@ -12,9 +12,7 @@
           <q-btn flat label="Cancel" v-close-popup />
           <q-btn flat label="Ок" @click="CountRequared = true" v-close-popup />
         </q-card-actions>
-
-
-
+        
         <q-card-section>
           <div class="text-h6">Select the number of signatures required to use your wallet(maximum 15)</div>
         </q-card-section>
@@ -52,13 +50,6 @@
 
 
   </q-page>
-
-  
-
-
-
-
-  
 </template>
 
 <style scoped>

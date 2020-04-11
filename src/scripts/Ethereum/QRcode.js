@@ -1,7 +1,7 @@
 import Transaction from './Transaction.js'
 
 export default {
-    Scan (key) {
+    ScanSingle (key) {
         cordova.plugins.barcodeScanner.scan(
           function (result) {
             var ethers = require('ethers')
