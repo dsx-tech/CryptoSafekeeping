@@ -88,5 +88,36 @@ export default {
               alert("Error: " + err.message)
       
           });
+      },
+      InsertAddress(oldList, newList){
+
+        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+      
+        db.transaction(function(tx) {
+ 
+                tx.executeSql("UPDATE multisigAddresses SET keylist = ? WHERE keylist = ?", [newList, oldList]);
+    
+        }, function(err){
+    
+            //errors for all transactions are reported here
+            alert("Error: " + err.message)
+    
+        });
+      },
+
+      InsertMainAddress(address){
+
+        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+      
+        db.transaction(function(tx) {
+ 
+                tx.executeSql("UPDATE multisigAddresses SET address = ? WHERE address = ?", [address, ""]);
+    
+        }, function(err){
+    
+            //errors for all transactions are reported here
+            alert("Error: " + err.message)
+    
+        });
       }
 }

@@ -12,58 +12,60 @@
    <p> {{publicKey}} </p>
     
    <q-item class="flex flex-center">
-   <button class="nextButton" @click="Scan(key)"> Sign transaction </button>
+   <button class="nextButton" @click="turnCameraOn(key)" v-show="!showCamera"> Sign transaction </button>
    </q-item>
    <button class="nextButton" @click="Back()">Back</button>
+   <div v-if="showCamera">
+    <qrcode-stream :camera="camera" @decode="onDecode">
+    </qrcode-stream>
+  </div>
  </div>
 </template>
-<style>
 
-</style>
 <script>
-import { QrcodeStream } from 'vue-qrcode-reader'
 import settings from 'src/scripts/Bitcoin/settings.js'
+import QRCode from 'src/scripts/Bitcoin/QRCode.js'
+import { QrcodeStream } from 'vue-qrcode-reader'
 let bitcoin = require('bitcoinjs-lib')
 
-export default{
-  components: { QrcodeStream },
-  name:'bitcoinAddress',
-  data(){
-   return{
-    show: false,
-    key: this.$route.params.key,
-    privateKey: this.$route.params.key.privateKey.toString('hex'),
-    publicKey: this.$route.params.key.publicKey.toString('hex'),
-    name: this.$route.params.name,
-    address: this.$route.params.address,
-     camera: 'auto',
+export default {
+  data () {
+    return {
+      show: false,
+      name: this.$route.params.name,
+      address: this.$route.params.address,
+      key: bitcoin.ECPair.fromWIF(this.$route.params.key).toString('hex'),
+      publicKey: bitcoin.ECPair.fromWIF(this.$route.params.key).publicKey.toString('hex'),
+      privateKey: bitcoin.ECPair.fromWIF(this.$route.params.key).privateKey.toString('hex'),
+      camera: 'auto',
       result: null,
       showCamera: false
-   }
+    }
   },
-  methods:{
-   /*Scan (key) {
-      cordova.plugins.barcodeScanner.scan(
-        function (result) {
-          let text = confirm('We got a barcode\n' +
-          'Result: ' + result.text + '\n')
-          let tx = new bitcoin.TransactionBuilder()
-          let pos1 = result.text.indexOf('"Input":"') + 8
-          let pos2 = result.text.indexOf('"Output":"') + 9
-          let pos3 = result.text.indexOf('"Amount":"') + 9
-          let str1 = result.text.substring(pos1 + 1, result.text.indexOf('"', pos1 + 1))
-          alert(str1)
-          let str2 = result.text.substring(pos2 + 1, result.text.indexOf('"', pos2 + 1))
-          alert(str2)
-          let amount = result.text.substring(pos3 + 1, result.text.indexOf('"', pos3 + 1))
-          alert(amount * 100000000)
-          tx.addInput(str1, 1)
-          tx.addOutput(str2, amount * 1000000)
-          alert(key.toWIF())
-          tx.sign(0, key)
-          alert(tx.build().toHex())
-          if (text !== Boolean(false)) {
-            cordova.plugins.barcodeScanner.encode(cordova.plugins.barcodeScanner.Encode.TEXT_TYPE, tx.build().toHex(), function (success) {
+  methods: {
+   Back(){
+      this.$router.go(-1)
+    },
+    async onDecode (content) {
+      this.result = content
+      this.turnCameraOff()
+    },
+    turnCameraOn (key) {
+      if (this.$q.platform.is.mobile){
+        QRCode.Scan(key)
+      }
+      else {
+        this.camera = 'auto'
+        this.showCamera = true
+      }
+    },
+    turnCameraOff () {
+      this.camera = 'off'
+      this.showCamera = false
+    },
+    ExportKey(key){
+    if (key !== Boolean(false)) {
+            cordova.plugins.barcodeScanner.encode(cordova.plugins.barcodeScanner.Encode.TEXT_TYPE, key, function (success) {
               alert('encode success: ' + success)
             }, function (fail) {
               alert('encoding failed: ' + fail)
@@ -72,37 +74,29 @@ export default{
           } else {
             alert('error')
           }
-        }
-      )
-    },*/
-    Scan(key) {
-      this.destroyed = false
     },
     Back(){
-        this.$router.go(-1)
+        this.$router.push ({name: 'Ethereum' })
     },
-    async onDecode (content) {
-      this.result = content
-      this.turnCameraOff()
-    },
-    turnCameraOn () {
-      this.camera = 'auto'
-      this.showCamera = true
-    },
-    turnCameraOff () {
-      this.camera = 'off'
-      this.showCamera = false
-    },
-     async onInit (promise) {
 
-      try {
-        await promise
-      } catch (error) {
-        console.error(error)
-      } finally {
-        this.loading = false
+    MultisigAddress(walletName, countHolders, countSigns) {
+      let arrOwners = [];
+      
+      for (let i = 0; i < countHolders; i++) {
+        let newKey = prompt('Enter public key')
+        alert(newKey)
+        console.log(newKey)
+        arrOwners.push(newKey)
       }
+
+      this.$router.push({name: 'EthereumMultisigCreation'})
+      Addresses.newMultisigAddress(countSigns, arrOwners);
+      multisigContacts.push({name: walletName, address: 'undefined', holders: countHolders, signs: countSigns, ownersList: arrOwners})
+    },
+
+    codeCordova(){
+      return QRcode.Scan();
     }
   }
-} 
+}
 </script>

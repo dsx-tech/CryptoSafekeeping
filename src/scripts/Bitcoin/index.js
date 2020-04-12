@@ -135,7 +135,6 @@ export default {
     GoToMultisigAddress (key, holders, signs, keyList, address, name) {
       console.log(keyList);
      this.$router.push({ name: 'BitcoinMultisigPage', params: { key: key, signs: signs, holders: holders, keyList: keyList, address: address, name: name } })
-      // this.$router.push({ path: '/bitcoin/BitcoinMultisigAddressPage'})
     },
 
     GoToAddress (name, address, key) {

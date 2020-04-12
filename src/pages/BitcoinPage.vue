@@ -91,7 +91,7 @@
            <q-list>
                  <q-item v-for="multisigContact in multisigContacts" :key="multisigContact.id" class="q-my-sm" clickable v-ripple>
                <q-item-section>
-                  <q-item-label @click= "GoToMultisigAddress(multisigContact.key, multisigContact.holders, multisigContact.signs, multisigContact.keyList, multisigContact.address, multisigContact.name)">{{ multisigContact.name }}</q-item-label>
+                  <q-item-label @click= "GoToMultisigAddress(multisigContact.key, multisigContact.holders, multisigContact.signs, multisigContact.keylist, multisigContact.address, multisigContact.name)">{{ multisigContact.name }}</q-item-label>
                </q-item-section>
                  </q-item>
                 </q-list>
