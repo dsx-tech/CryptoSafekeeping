@@ -19,7 +19,7 @@ export default {
                     console.log('Singed Transaction: \n' + signedTransaction)
 
                     var qr = new QRious({
-                      element: document.getElementById('qr'),
+                      element: document.getElementById('qr-transaction'),
                       value: signedTransaction,
                       level: 'H',
                       size: 1000,
