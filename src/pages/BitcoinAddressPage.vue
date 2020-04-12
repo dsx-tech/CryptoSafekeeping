@@ -63,40 +63,6 @@ export default {
       this.camera = 'off'
       this.showCamera = false
     },
-    ExportKey(key){
-    if (key !== Boolean(false)) {
-            cordova.plugins.barcodeScanner.encode(cordova.plugins.barcodeScanner.Encode.TEXT_TYPE, key, function (success) {
-              alert('encode success: ' + success)
-            }, function (fail) {
-              alert('encoding failed: ' + fail)
-            }
-            )
-          } else {
-            alert('error')
-          }
-    },
-    Back(){
-        this.$router.push ({name: 'Ethereum' })
-    },
-
-    MultisigAddress(walletName, countHolders, countSigns) {
-      let arrOwners = [];
-      
-      for (let i = 0; i < countHolders; i++) {
-        let newKey = prompt('Enter public key')
-        alert(newKey)
-        console.log(newKey)
-        arrOwners.push(newKey)
-      }
-
-      this.$router.push({name: 'EthereumMultisigCreation'})
-      Addresses.newMultisigAddress(countSigns, arrOwners);
-      multisigContacts.push({name: walletName, address: 'undefined', holders: countHolders, signs: countSigns, ownersList: arrOwners})
-    },
-
-    codeCordova(){
-      return QRcode.Scan();
-    }
   }
 }
 </script>
