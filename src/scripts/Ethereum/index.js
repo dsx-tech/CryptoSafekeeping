@@ -4,7 +4,7 @@ import Transaction from './Transaction.js';
 import QRcode from './QRcode.js';
 import ERC20Token from './ERC20Token.js';
 import File from '../filesystem.js';
-
+import managBD from './ManagBD.js';
 
 let contacts = [];
 // [ 
@@ -56,10 +56,9 @@ export default {
   },
   
   beforeMount(){
-    File.read('SingleSigEthereum.json').then(function(result){
-        contacts = result;
-      }
-    );
+    this.contacts = managBD.DownLoadAddresses();
+    this.multisigContacts = managBD.DownLoadMultidigAdresses();
+    console.log(multisigContacts)
   },
   
   methods: {
@@ -67,8 +66,9 @@ export default {
       let result = Addresses.newAddress();
       let address = result[0]
       let pKey = result[1]
-      contacts.push({ address: address, key: pKey, name: walletName })
-      File.write('SingleSigEthereum.json', contacts);
+      this.contacts.push({ address: address, key: pKey, name: walletName })
+      //File.write('SingleSigEthereum.json', contacts);
+      managBD.InsertAddressDb(address, walletName.toString(), pKey)
     },
 
     MultisigAddress(walletName, countHolders, countSigns) {
@@ -183,8 +183,8 @@ export default {
       ERC20Token.transferMulti(privateKey, transaction, tokenAddress, contractAddress)
     },
 
-    GoToMultisigAddress (holders, signs, ownersList, address, name) {
-     this.$router.push({ name: 'EthereumMultisigPage', params: {signs: signs, holders: holders, ownersList: ownersList, address: address, name: name } })
+    GoToMultisigAddress (holders, signs, keylist, address, name) {
+     this.$router.push({ name: 'EthereumMultisigPage', params: {signs: signs, holders: holders, keylist: keylist, address: address, name: name } })
     },
 
     GoToAddress(name, address, key){

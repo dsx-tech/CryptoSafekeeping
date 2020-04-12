@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\pages"
+    "\\src\\pages",
+    "\\src\\scripts"
   ],
-  "SelectedNode": "\\src\\pages\\EthereumAddressPage.vue",
+  "SelectedNode": "\\src\\scripts\\filesystem.js",
   "PreviewInSolutionExplorer": false
 }
