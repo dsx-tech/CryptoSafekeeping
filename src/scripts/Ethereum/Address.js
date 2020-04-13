@@ -33,7 +33,7 @@ export default {
       //to do: fix double creating wallet
       let wallet_for_pk = ethers.Wallet.createRandom();
       let creator = wallet_for_pk.privateKey;
-      let address = wallet_for_pk.address;
+      //let address = wallet_for_pk.address;
       let contract = new Contract()
       let abi = contract.abiJSON
       let bytecode = contract.BYTECODE

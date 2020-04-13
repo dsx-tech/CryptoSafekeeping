@@ -104,7 +104,9 @@ export default {
     },
     turnCameraOn () {
       if (this.$q.platform.is.mobile){
-        let temp = this.multAddresses
+        let temp = this.multAddresses.filter(function (el) {
+          return el != "";
+        })
         cordova.plugins.barcodeScanner.scan(
           function (result) {
             alert(result.text)
@@ -125,35 +127,8 @@ export default {
       this.camera = 'off'
       this.showCamera = false
     },
-    ExportKey(key){
-    if (key !== Boolean(false)) {
-            cordova.plugins.barcodeScanner.encode(cordova.plugins.barcodeScanner.Encode.TEXT_TYPE, key, function (success) {
-              alert('encode success: ' + success)
-            }, function (fail) {
-              alert('encoding failed: ' + fail)
-            }
-            )
-          } else {
-            alert('error')
-          }
-    },
     Back(){
         this.$router.push ({name: 'Ethereum' })
-    },
-
-    MultisigAddress(walletName, countHolders, countSigns) {
-      let arrOwners = [];
-      
-      for (let i = 0; i < countHolders; i++) {
-        let newKey = prompt('Enter public key')
-        alert(newKey)
-        console.log(newKey)
-        arrOwners.push(newKey)
-      }
-
-      this.$router.push({name: 'EthereumMultisigCreation'})
-      Addresses.newMultisigAddress(countSigns, arrOwners);
-      multisigContacts.push({name: walletName, address: 'undefined', holders: countHolders, signs: countSigns, ownersList: arrOwners})
     },
 
     SaveAddresses(){
@@ -162,7 +137,6 @@ export default {
       managBD.InsertMultisigDb(null, this.walletName, this.countHolders, this.countSigns, keyList)
       alert("Saved successfully")
     },
-
     cancel(){
       this.$router.push ({name: 'Ethereum' })
     }

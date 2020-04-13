@@ -5,9 +5,6 @@
    <p> {{name}} </p>
    <h6> Your address:</h6>
    <p> {{address}} </p>
-   <q-item class="flex flex-center">
-      <button @click="ExportKey()"> Export your public key </button>
-   </q-item>
    </q-card>
    <h6>Owners:</h6>
    
@@ -38,13 +35,39 @@
   </q-card-actions>
 
   <q-item class="flex flex-center">
-    <button @click="ScanForMultisig(key, holders, signs, BufferKeyList)"> Sign transaction </button>
+    <button @click="createWallet()"> Create wallet </button>
   </q-item>
-  <button @click="Back()">Back</button>
+  <div class="wrap-code">
+    <canvas id="qr-transaction"></canvas>
+    <canvas id="qr-transaction-1" class="qr-code"></canvas>
+    <canvas id="qr-transaction-2" class="qr-code"></canvas>
+    <canvas id="qr-transaction-3" class="qr-code"></canvas>
+    <canvas id="qr-transaction-4" class="qr-code"></canvas>
+    <canvas id="qr-transaction-5" class="qr-code"></canvas>
+    <canvas id="qr-transaction-6" class="qr-code"></canvas>
+    <canvas id="qr-transaction-7" class="qr-code"></canvas>
+    <canvas id="qr-transaction-8" class="qr-code"></canvas>
+    <canvas id="qr-transaction-9" class="qr-code"></canvas>
+    <canvas id="qr-transaction-10" class="qr-code"></canvas>
+    <canvas id="qr-transaction-11" class="qr-code"></canvas>
+    <canvas id="qr-transaction-12" class="qr-code"></canvas>
+    <canvas id="qr-transaction-13" class="qr-code"></canvas>
+    <canvas id="qr-transaction-14" class="qr-code"></canvas>
+    <canvas id="qr-transaction-15" class="qr-code"></canvas>
+    <canvas id="qr-transaction-16" class="qr-code"></canvas>
+    <canvas id="qr-transaction-17" class="qr-code"></canvas>
+    <canvas id="qr-transaction-18" class="qr-code"></canvas>
+    <canvas id="qr-transaction-19" class="qr-code"></canvas>
+    <canvas id="qr-transaction-20" class="qr-code"></canvas>
+  </div>
+    <button @click="Back()">Back</button>
  </div>
 </template>
 
 <style scoped>
+  .class {
+    width: 100%;
+  }
   .validation-success,
   .validation-failure,
   .validation-pending {
@@ -71,9 +94,12 @@
 <script>
 import QRcode from '../scripts/Ethereum/QRcode.js'
 import { QrcodeStream } from 'vue-qrcode-reader'
-import managBD from '../scripts/Ethereum/ManagBD.js';
+import managBD from '../scripts/Ethereum/ManagBD.js'
+import Address from '../scripts/Ethereum/Address.js'
 
 export default{
+  name: 'PageIndex',
+  components: { QrcodeStream },
   data(){
    return{
     show: false, 
@@ -100,7 +126,9 @@ export default{
     },
     turnCameraOn () {
       if (this.$q.platform.is.mobile){
-        let temp = this.keylist
+        let temp = this.keylist.filter(function (el) {
+          return el != "";
+        })
         cordova.plugins.barcodeScanner.scan(
           function (result) {
             alert(result.text)
@@ -119,30 +147,26 @@ export default{
       this.camera = 'off'
       this.showCamera = false
     },
-
-    ExportKey(key){
-    if (key !== Boolean(false)) {
-            cordova.plugins.barcodeScanner.encode(cordova.plugins.barcodeScanner.Encode.TEXT_TYPE, key, function (success) {
-              alert('encode success: ' + success)
-            }, function (fail) {
-              alert('encoding failed: ' + fail)
-            }
-            )
-          } else {
-            alert('error')
-          }
-    },
     Back(){
-        this.$router.push ({name: 'Ethereum' })
+      this.$router.push ({name: 'Ethereum' })
     },
     SaveAddresses(){
       let keyListStr = "";
-      this.keyList.forEach(element => keyListStr += element.toString() + ';')
+      this.keylist.forEach(element => keyListStr += element.toString() + ';')
       managBD.InsertMultisigDb(null, this.walletName, this.countHolders, this.countSigns, keyListStr)
       alert("Saved successfully")
     },
     cancel(){
+      for (var i = 1; i < 99999; i++)
+        window.clearInterval(i);
       this.$router.push ({name: 'Ethereum' })
+    },
+    createWallet(){
+      let owners = this.keylist.filter(function (el) {
+          return el != "";
+        })
+      console.log(owners)
+      Address.newMultisigAddress(this.holders, owners)
     }
   }
 }
