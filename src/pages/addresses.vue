@@ -7,11 +7,13 @@
     <q-btn @click="writeAppend()" label="write to the end" />
     <q-btn @click="readTest()" label="test reading" />
     <q-btn @click="clear()" label="clear file" />
+    <q-btn @click="test()" label="for test" />
     <q-list>
              <q-item v-for="(address, idx) in addresses" :key="idx" class="q-my-sm" clickable v-ripple {{ address.name }}>
 
-      </q-item>
+            </q-item>
      </q-list>
+
   </div>
 
 </template>
@@ -19,6 +21,12 @@
 <script>
 import settings from '../scripts/Bitcoin/settings.js'
 import File from '../scripts/filesystem.js' 
+import {
+  parseFramesReducer,
+  areFramesComplete,
+  framesToData,
+  progressOfFrames
+} from "qrloop";
 
 function read(fileName) {
   return new Promise((resolve, reject) => {
@@ -138,7 +146,8 @@ export default {
   data() {
     return {
       message: "hey",
-      addresses
+      addresses,
+      frames
     };
   },
   methods: {
@@ -174,7 +183,30 @@ export default {
     },
      clear(){
        File.clear('SingleSig.json')
-     }
+     },
+
+     test(){
+      function onBarCodeScanned ( data, frames1 ) {
+      try {
+        const frames = (frames1 = parseFramesReducer(frames1, data));
+        if (areFramesComplete(frames)) {
+          this.props.onResult(framesToData(frames).toString());
+        } else {
+          this.setState({
+            progress: progressOfFrames(frames)
+          });
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    onBarCodeScanned(onBarCodeScanned('', null));
+        
+
+     },
+
+    
 
   }
 };

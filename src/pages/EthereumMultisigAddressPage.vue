@@ -4,7 +4,7 @@
    <h6> Your name:</h6>
    <p> {{name}} </p>
    <h6> Your address:</h6>
-   <p> {{address}} </p>
+   <p> {{address[0]}} </p>
    </q-card>
    <h6>Owners:</h6>
    
@@ -20,7 +20,8 @@
 
   <div class="col text-center">
       <q-btn label="Add holder" class="nextButton" @click="turnCameraOn()" v-show="!showCamera"/>
-        <p class="text-subtitle1" v-if="address">Wallet address: <b>{{ address }}</b></p>
+      <q-btn label="Import wallet address" class="nextButton" @click="importAddress()" v-show="!showCamera"/>
+      <q-btn label="Create wallet" class="nextButton" @click="createWallet()" />
       <div v-if="showCamera">
 
         <qrcode-stream :camera="camera" @decode="onDecode">
@@ -34,10 +35,7 @@
     <q-btn flat label="Save" @click="SaveAddresses()" v-close-popup />
   </q-card-actions>
 
-  <q-item class="flex flex-center">
-    <button @click="createWallet()"> Create wallet </button>
-  </q-item>
-  <div class="wrap-code">
+  <div class="wrap-code" v-show="showAllCodes">
     <canvas id="qr-transaction"></canvas>
     <canvas id="qr-transaction-1" class="qr-code"></canvas>
     <canvas id="qr-transaction-2" class="qr-code"></canvas>
@@ -106,17 +104,19 @@ export default{
     signs: this.$route.params.signs,
     holders: this.$route.params.holders,
     keylist: this.$route.params.keylist.split(';'),
-    address: this.$route.params.address,
+    address: [this.$route.params.address],
     name: this.$route.params.name,
     isValid: undefined,
     camera: 'auto',
     result: null,
     showCamera: false,
+    showAllCodes: false
    }
   },
   
   beforeMount(){
     console.log('res' + this.$route.params.keylist)
+    console.log('address' + this.$route.params.address)
   },
   methods: {
 
@@ -153,7 +153,9 @@ export default{
     SaveAddresses(){
       let keyListStr = "";
       this.keylist.forEach(element => keyListStr += element.toString() + ';')
-      managBD.InsertMultisigDb(null, this.walletName, this.countHolders, this.countSigns, keyListStr)
+      console.log('addres for update =' + this.address)
+      console.log('name for update =' + this.name)
+      managBD.UpdateMultisigDb(this.address[0], this.name, keyListStr)
       alert("Saved successfully")
     },
     cancel(){
@@ -162,11 +164,38 @@ export default{
       this.$router.push ({name: 'Ethereum' })
     },
     createWallet(){
-      let owners = this.keylist.filter(function (el) {
-          return el != "";
-        })
-      console.log(owners)
-      Address.newMultisigAddress(this.holders, owners)
+      if (this.showAllCodes) {
+        this.showAllCodes = false
+        for (var i = 1; i < 99999; i++)
+          window.clearInterval(i);
+        this.$router.push ({name: 'Ethereum' })
+      }
+      else {
+        this.showAllCodes = true
+        let owners = this.keylist.filter(function (el) {
+            return el != "";
+          })
+        console.log(owners)
+        Address.newMultisigAddress(this.holders, owners)
+      }
+
+    },
+
+    importAddress () {
+      if (this.$q.platform.is.mobile){
+        let temp = []
+        this.address = temp
+        cordova.plugins.barcodeScanner.scan(
+          function (result) {
+            alert(result.text)
+            temp.push(result.text)
+          }
+        )
+      }
+      else {
+        this.camera = 'auto'
+        this.showCamera = true
+      }
     }
   }
 }

@@ -89,6 +89,23 @@ export default {
       
           });
       },
+
+      UpdateMultisigDb(address, name, keylist) {
+        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+      
+          db.transaction(function(tx) {
+                    console.log('updating' + address)
+                  tx.executeSql("UPDATE multisig_addresses_ethereum SET address = ?, keylist = ? WHERE name = ?", [address, keylist, name]);
+      
+          }, function(err){
+      
+              //errors for all transactions are reported here
+              alert("Error: " + err.message)
+      
+          });
+      },
+
+
       InsertAddress(oldList, newList){
 
         var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
