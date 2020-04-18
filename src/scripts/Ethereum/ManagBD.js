@@ -75,12 +75,12 @@ export default {
           });
       },
 
-      InsertMultisigDb(address, name, holders, signs, keylist) {
+    InsertMultisigDb(address, name, holders, signs, keylist) {
         var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
       
           db.transaction(function(tx) {
    
-                  tx.executeSql("INSERT INTO multisig_addresses_ethereum (name, address, holders, signs, keylist) VALUES (?,?,?,?,?)", [name, address, holders, signs, keylist]);
+                  tx.executeSql("INSERT INTO multisig_addresses_ethereum (name, address, holders, signs, keylist) VALUES (?,?,?,?,?,?)", [name, pKey, address, holders, signs, keylist]);
       
           }, function(err){
       
@@ -88,7 +88,7 @@ export default {
               alert("Error: " + err.message)
       
           });
-      },
+    },
 
       UpdateMultisigDb(address, name, keylist) {
         var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});

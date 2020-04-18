@@ -184,7 +184,7 @@ export default {
     },
 
     GoToMultisigAddress (holders, signs, keylist, address, name) {
-     this.$router.push({ name: 'EthereumMultisigPage', params: {signs: signs, holders: holders, keylist: keylist, address: address, name: name } })
+     this.$router.push({ name: 'EthereumMultisigPage', params: {signs: signs, holders: holders, keylist: keylist, address: address, name: name, contacts: this.contacts } })
     },
 
     GoToAddress(name, address, key){

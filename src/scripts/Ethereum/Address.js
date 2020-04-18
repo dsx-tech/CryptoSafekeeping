@@ -20,8 +20,6 @@ export default {
       let wallet = ethers.Wallet.createRandom();
       let pKey = wallet.privateKey;
       let address = wallet.address;
-
-
       let qr = new QRious({
         element: document.getElementById('qr'),
         value: pKey
@@ -29,17 +27,13 @@ export default {
       return[address, pKey]
     },
 
-    newMultisigAddress(countSigns, owners) {
-      //to do: fix double creating wallet
-      let wallet_for_pk = ethers.Wallet.createRandom();
-      let creator = wallet_for_pk.privateKey;
-      //let address = wallet_for_pk.address;
+    newMultisigAddress(privateKey, countSigns, owners) {
       let contract = new Contract()
       let abi = contract.abiJSON
       let bytecode = contract.BYTECODE
       //to do: changing provider from ropsten
 	    let provider = ethers.getDefaultProvider('ropsten');
-      let wallet = new ethers.Wallet(creator, provider);
+      let wallet = new ethers.Wallet(privateKey, provider);
       
 
         let overrides = {
@@ -52,7 +46,7 @@ export default {
         let factory = new ethers.ContractFactory(abi, bytecode, wallet);
         let transaction = factory.getDeployTransaction(owners, countSigns, overrides);
 
-        Transaction.signing(wallet, transaction)
+        Transaction.signing(wallet, transaction, true)
 
     },
 

@@ -107,7 +107,7 @@ export default{
       //key = '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a'
       let wallet = new ethers.Wallet(this.key)
       // nonce: 24
-      Transaction.signing(wallet, transaction)
+      Transaction.signing(wallet, transaction, false)
    },
    turnCameraOn () {
     if (this.$q.platform.is.mobile) {

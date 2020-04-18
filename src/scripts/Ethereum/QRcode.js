@@ -3,10 +3,9 @@ import Transaction from './Transaction.js'
 export default {
     ScanSingle (key) {
         cordova.plugins.barcodeScanner.scan(
-          function (result) {
+          async function (result) {
             var ethers = require('ethers')
-            
-            alert(result.text)
+
             let json_result = JSON.parse(result.text)
 
              /*

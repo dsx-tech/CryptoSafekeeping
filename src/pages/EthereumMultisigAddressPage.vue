@@ -1,30 +1,60 @@
 <template>
  <div class="q-pa-sm">
-   <q-card class="no-margin">
-   <h6> Your name:</h6>
-   <p> {{name}} </p>
-   <h6> Your address:</h6>
-   <p> {{address[0]}} </p>
-   </q-card>
-   <h6>Owners:</h6>
-   
-  <q-list>
-    <q-item v-for="item in keylist" :key="item" class="q-my-sm" clickable v-ripple>
+  <div class="no-margin wallet-properties">
+    <div v-if="showCodeTransaction">
+      <canvas id="qr-transaction">
+      </canvas>
+      <q-btn label="hide" class="nextButton" @click="hideCodeTransaction()"/>
+    </div>
+    <h6> Your name:</h6>
+    <p> {{name}} </p>
+    <h6> Your address:</h6>
+    <p> {{address[0]}} </p>
+    <h6> Needed signers for transactiom:</h6>
+    <p> {{signs}} </p>
+    <h6> Holders of wallet:</h6>
+    <p> {{holders}} </p>
 
-      <q-item-section>
-        <q-item-label>{{ item }}</q-item-label>
-      
-      </q-item-section>
-    </q-item>
-  </q-list>
+    <h6>Owners:</h6>
+   
+    <q-list>
+      <q-item v-for="item in keylist" :key="item" class="q-my-sm" clickable v-ripple>
+        <q-item-section>
+          <q-item-label>{{ item }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+
+    <div>
+      <h6>Choose single wallet for deploy creation</h6>
+      <q-list v-show="choiceSingle">
+        <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
+
+          <q-item-section>
+            <q-item-label @click= "chooseWallet(contact.name, contact.key)">{{ contact.name }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+
+      <div class="chose row" v-show="choseSingle">
+        <p class="col" style="margin: auto">{{ nameSingle }} </p>
+        <q-btn flat class="nextButton col" id="activateChoice" label="change main wallet" @click="activateChoice()"/>
+      </div>
+    </div>
+
+  </div>
 
   <div class="col text-center">
       <q-btn label="Add holder" class="nextButton" @click="turnCameraOn()" v-show="!showCamera"/>
       <q-btn label="Import wallet address" class="nextButton" @click="importAddress()" v-show="!showCamera"/>
       <q-btn label="Create wallet" class="nextButton" @click="createWallet()" />
+      <q-btn label="Create transaction" class="nextButton" @click="createTransaction()" />
       <div v-if="showCamera">
-
         <qrcode-stream :camera="camera" @decode="onDecode">
+        </qrcode-stream>
+      </div>
+      <div v-if="showCameraTransaction">
+        <qrcode-stream :camera="camera" @decode="onDecodeTransaction">
         </qrcode-stream>
       </div>
   </div>
@@ -66,13 +96,29 @@
   .class {
     width: 100%;
   }
+  .wallet-properties{
+    color: rgb(105, 105, 105);
+    padding: 5%;
+
+  }
+  h6{
+    margin-top: 30px;
+  }
+  p{
+    margin-top: -30px;
+  }
+  #activateChoice{
+    margin: 0;
+    font-size: 10px;
+    height: 50px;
+  }
   .validation-success,
   .validation-failure,
   .validation-pending {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, .8);
+    background-color: rgba(85, 85, 85, 0.8);
     text-align: center;
     font-weight: bold;
     font-size: 1.4rem;
@@ -94,6 +140,7 @@ import QRcode from '../scripts/Ethereum/QRcode.js'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import managBD from '../scripts/Ethereum/ManagBD.js'
 import Address from '../scripts/Ethereum/Address.js'
+import Transaction from '../scripts/Ethereum/Transaction.js'
 
 export default{
   name: 'PageIndex',
@@ -103,26 +150,63 @@ export default{
     show: false, 
     signs: this.$route.params.signs,
     holders: this.$route.params.holders,
-    keylist: this.$route.params.keylist.split(';'),
+    keylist: this.$route.params.keylist.split(';').filter(function (el) {
+          return el != "";
+        }),
     address: [this.$route.params.address],
     name: this.$route.params.name,
     isValid: undefined,
     camera: 'auto',
     result: null,
     showCamera: false,
-    showAllCodes: false
+    showCameraTransaction: false,
+    showAllCodes: false,
+    showCodeTransaction: false,
+    isCreated: this.$route.params.address != 'null',
+    contacts: this.$route.params.contacts,
+    nameSingle: null,
+    choseSingle: false,
+    choiceSingle: true,
+    pKey: null,
    }
   },
   
   beforeMount(){
-    console.log('res' + this.$route.params.keylist)
-    console.log('address' + this.$route.params.address)
   },
   methods: {
 
     async onDecode (content) {
       this.result = content
       this.turnCameraOff()
+    },
+    async onDecodeTransaction (content) {
+      this.result = content
+      this.turnCameraOff()
+      var ethers = require('ethers')
+    
+      let json_result = JSON.parse(content)
+      var text = confirm('Transaction details' +
+        '\n' + 'from: ' + '\n' + '\n' +
+                  'to: ' + '\n' + json_result.to + '\n' + '\n' +
+                  'Gas Limit: ' + json_result.gasLimit + '\n' +
+                  'Gas Price: ' + json_result.gasPrice + '\n' +
+                  'Value: ' + json_result.value + '\n' +
+                  'nonce: ' + json_result.nonce + '\n' +
+                  'data: ' + json_result.data + '\n' +
+                  'chain: ' + json_result.chainId
+      )
+
+      let transaction = {
+            nonce: json_result.nonce,
+            gasLimit: json_result.gasLimit,
+            gasPrice: ethers.utils.bigNumberify(json_result.gasPrice)._hex,//.toString(16),//_hex, 
+            to: json_result.to, 
+            value: ethers.utils.parseEther(json_result.value + "")._hex,//.toString(16),//._hex, 
+            data: json_result.data,
+            chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
+        }
+        Transaction.createMultiSigTransaction(this.pKey, transaction, this.address)
+        this.showCodeTransaction = true
     },
     turnCameraOn () {
       if (this.$q.platform.is.mobile){
@@ -155,7 +239,7 @@ export default{
       this.keylist.forEach(element => keyListStr += element.toString() + ';')
       console.log('addres for update =' + this.address)
       console.log('name for update =' + this.name)
-      managBD.UpdateMultisigDb(this.address[0], this.name, keyListStr)
+      managBD.UpdateMultisigDb(this.address[0], this.pKey, this.name, keyListStr)
       alert("Saved successfully")
     },
     cancel(){
@@ -164,39 +248,111 @@ export default{
       this.$router.push ({name: 'Ethereum' })
     },
     createWallet(){
-      if (this.showAllCodes) {
-        this.showAllCodes = false
-        for (var i = 1; i < 99999; i++)
-          window.clearInterval(i);
-        this.$router.push ({name: 'Ethereum' })
-      }
+      console.log(this.pKey)
+      if (this.pKey == null) alert("Choose the single wallet for deploying Transaction")
       else {
-        this.showAllCodes = true
-        let owners = this.keylist.filter(function (el) {
-            return el != "";
-          })
-        console.log(owners)
-        Address.newMultisigAddress(this.holders, owners)
+        if (Object.keys(this.keylist).length != this.holders)
+          alert("You have not enough addresses of owners for creation. \nYou have: " + Object.keys(this.keylist).length +"\nYou need: " + this.holders)
+        else {
+          if (this.showAllCodes) {
+            this.showAllCodes = false
+            for (var i = 1; i < 99999; i++)
+              window.clearInterval(i);
+            //this.$router.push ({name: 'Ethereum' })
+          }
+          else {
+            this.showAllCodes = true
+            let owners = this.keylist.filter(function (el) {
+                return el != "";
+              })
+            console.log(owners)
+            Address.newMultisigAddress(this.pKey, this.holders, owners)
+          }
+          this.isCreated = true
+        }
       }
-
     },
 
     importAddress () {
-      if (this.$q.platform.is.mobile){
-        let temp = []
-        this.address = temp
-        cordova.plugins.barcodeScanner.scan(
-          function (result) {
-            alert(result.text)
-            temp.push(result.text)
-          }
-        )
-      }
+      if (!this.isCreated)
+        alert("You cannot import address before creation.")
       else {
-        this.camera = 'auto'
-        this.showCamera = true
+        if (this.$q.platform.is.mobile){
+          let temp = []
+          this.address = temp
+          cordova.plugins.barcodeScanner.scan(
+            function (result) {
+              alert(result.text)
+              temp.push(result.text)
+            }
+          )
+        }
+        else {
+          this.camera = 'auto'
+          this.showCamera = true
+        }
       }
+    },
+
+    async createTransaction(){
+      if (this.pKey == null) alert("Choose the single wallet for deploying Transaction")
+      else {
+        if (this.$route.params.address == 'null') alert("You have to import wallet address.")
+        else {
+          if (this.$q.platform.is.mobile) {
+            let pKey = this.pKey;
+            let address = this.address[0];
+            cordova.plugins.barcodeScanner.scan(
+              function (result) {
+                var ethers = require('ethers')
+                let json_result = JSON.parse(result.text)
+                var text = confirm('Transaction details' +
+                  '\n' + 'from: ' + '\n' + '\n' +
+                            'to: ' + '\n' + json_result.to + '\n' + '\n' +
+                            'Gas Limit: ' + json_result.gasLimit + '\n' +
+                            'Gas Price: ' + json_result.gasPrice + '\n' +
+                            'Value: ' + json_result.value + '\n' +
+                            'nonce: ' + json_result.nonce + '\n' +
+                            'data: ' + json_result.data + '\n' +
+                            'chain: ' + json_result.chainId
+                )
+                let transaction = {
+                      nonce: json_result.nonce,
+                      gasLimit: json_result.gasLimit,
+                      gasPrice: ethers.utils.bigNumberify(json_result.gasPrice)._hex,//.toString(16),//_hex, 
+                      to: json_result.to, 
+                      value: ethers.utils.parseEther(json_result.value + "")._hex,//.toString(16),//._hex, 
+                      data: json_result.data,
+                      chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
+                  }
+                  Transaction.createMultiSigTransaction(pKey, transaction, address)
+              }
+            )
+            this.showCodeTransaction = true
+          }
+          else {  
+            this.camera = 'auto'
+            this.showCameraTransaction = true
+          } 
+        }
+      }
+    },
+
+    chooseWallet(name, pKey){
+      this.pKey = pKey
+      this.nameSingle = name
+      this.choiceSingle = false
+      this.choseSingle = true
+    },
+    activateChoice(){
+      this.choiceSingle = true
+      this.choseSingle = false
+    },
+    hideCodeTransaction(){
+      this.showCodeTransaction = false
     }
+
+    
   }
 }
 </script>

@@ -12,6 +12,7 @@
           <q-select outlined v-model="countSigns" :options="options" label="Number of signs for transaction"/>
         </div>
       </div>
+  
     </div>
 
     <q-card-actions align="right" class="text-primary">
@@ -139,7 +140,7 @@ export default {
     },
     cancel(){
       this.$router.push ({name: 'Ethereum' })
-    }
+    },
   }
 }
 </script>
