@@ -59,6 +59,8 @@ export default {
     this.contacts = managBD.DownLoadAddresses();
     this.multisigContacts = managBD.DownLoadMultidigAdresses();
     console.log(multisigContacts)
+    for (var i = 1; i < 99999; i++)
+      window.clearInterval(i);
   },
   
   methods: {

@@ -14,8 +14,9 @@ export default {
   signing(wallet, transaction, isLongTransaction){
     console.log(transaction)
     let signPromise = wallet.sign(transaction)
-
+    
     signPromise.then((signedTransaction) => {
+      console.log("transaction: " + signedTransaction)
       if (!isLongTransaction) {
         var qr = new QRious({
           element: document.getElementById('qr-transaction'),

@@ -27,21 +27,13 @@ export default {
       return[address, pKey]
     },
 
-    newMultisigAddress(privateKey, countSigns, owners) {
+    newMultisigAddress(privateKey, countSigns, owners, overrides) {
       let contract = new Contract()
       let abi = contract.abiJSON
       let bytecode = contract.BYTECODE
       //to do: changing provider from ropsten
 	    let provider = ethers.getDefaultProvider('ropsten');
       let wallet = new ethers.Wallet(privateKey, provider);
-      
-
-        let overrides = {
-            gasLimit: 8000000,
-            gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
-            nonce: 1,
-            chainId: 3
-        }
 
         let factory = new ethers.ContractFactory(abi, bytecode, wallet);
         let transaction = factory.getDeployTransaction(owners, countSigns, overrides);

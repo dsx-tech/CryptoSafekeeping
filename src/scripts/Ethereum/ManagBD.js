@@ -1,38 +1,58 @@
 export default {
     DownLoadAddresses() {
     var text = []
-      var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+    var db = null
 
-      db.transaction(function(tx) {
-        // tx.executeSql('DROP TABLE IF EXISTS addresses');
-        //create table
-        tx.executeSql("CREATE TABLE IF NOT EXISTS addresses_ethereum (address text primary key, name text, key text)", [], function(tx, res){
+    if (navigator.userAgent.match(/(Android)/)) {
+        db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+        console.log('DB: SQLite');
     
-        db.transaction(function(tx) {                    
-                    //retrieve data
-                    tx.executeSql("SELECT * FROM addresses_ethereum", [], function(tx, res){
-                        for(var iii = 0; iii < res.rows.length; iii++)
-                        {
-                            text.push({address: res.rows.item(iii).address, name: res.rows.item(iii).name, key: res.rows.item(iii).key})   
-                        }
-                        console.log(text)
-                        
-                    })
-                });
-         });
-        }, function(err){
+    } else {
     
-            //errors for all transactions are reported here
-            alert("Error: " + err.message)
-    
+        db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+        console.log('DB: WebSQL');
+    }
+
+    db.transaction(function(tx) {
+    // tx.executeSql('DROP TABLE IF EXISTS addresses');
+    //create table
+    tx.executeSql("CREATE TABLE IF NOT EXISTS addresses_ethereum (address text primary key, name text, key text)", [], function(tx, res){
+
+    db.transaction(function(tx) {                    
+                //retrieve data
+                tx.executeSql("SELECT * FROM addresses_ethereum", [], function(tx, res){
+                    for(var iii = 0; iii < res.rows.length; iii++)
+                    {
+                        text.push({address: res.rows.item(iii).address, name: res.rows.item(iii).name, key: res.rows.item(iii).key})   
+                    }
+                    console.log(text)
+                    
+                })
+            });
         });
-        return text
+    }, function(err){
+
+        //errors for all transactions are reported here
+        alert("Error: " + err.message)
+
+    });
+    return text
     },
 
     DownLoadMultidigAdresses() {
         var text = []
-          var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
-    
+          var db = null
+
+          if (navigator.userAgent.match(/(Android)/)) {
+              db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+              console.log('DB: SQLite');
+          
+          } else {
+          
+              db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+              console.log('DB: WebSQL');
+          }
+
           db.transaction(function(tx) {
            // tx.executeSql('DROP TABLE IF EXISTS multisigAddresses');
             //create table
@@ -60,7 +80,17 @@ export default {
         },
     
     InsertAddressDb(address, name, key) {
-        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+        var db = null
+
+        if (navigator.userAgent.match(/(Android)/)) {
+            db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+            console.log('DB: SQLite');
+        
+        } else {
+        
+            db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+            console.log('DB: WebSQL');
+        }
       
           db.transaction(function(tx) {
       
@@ -76,11 +106,21 @@ export default {
       },
 
     InsertMultisigDb(address, name, holders, signs, keylist) {
-        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+        var db = null
+
+        if (navigator.userAgent.match(/(Android)/)) {
+            db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+            console.log('DB: SQLite');
+        
+        } else {
+        
+            db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+            console.log('DB: WebSQL');
+        }
       
           db.transaction(function(tx) {
    
-                  tx.executeSql("INSERT INTO multisig_addresses_ethereum (name, address, holders, signs, keylist) VALUES (?,?,?,?,?,?)", [name, pKey, address, holders, signs, keylist]);
+                  tx.executeSql("INSERT INTO multisig_addresses_ethereum (name, address, holders, signs, keylist) VALUES (?,?,?,?,?)", [name, address, holders, signs, keylist]);
       
           }, function(err){
       
@@ -91,8 +131,17 @@ export default {
     },
 
       UpdateMultisigDb(address, name, keylist) {
-        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
-      
+        var db = null
+
+        if (navigator.userAgent.match(/(Android)/)) {
+            db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+            console.log('DB: SQLite');
+        
+        } else {
+        
+            db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+            console.log('DB: WebSQL');
+        }
           db.transaction(function(tx) {
                     console.log('updating' + address)
                   tx.executeSql("UPDATE multisig_addresses_ethereum SET address = ?, keylist = ? WHERE name = ?", [address, keylist, name]);
@@ -107,9 +156,17 @@ export default {
 
 
       InsertAddress(oldList, newList){
+        var db = null
 
-        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
-      
+        if (navigator.userAgent.match(/(Android)/)) {
+            db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+            console.log('DB: SQLite');
+        
+        } else {
+        
+            db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+            console.log('DB: WebSQL');
+        }
         db.transaction(function(tx) {
  
                 tx.executeSql("UPDATE multisig_addresses_ethereum SET keylist = ? WHERE keylist = ?", [newList, oldList]);
@@ -123,9 +180,17 @@ export default {
       },
 
       InsertMainAddress(address){
+        var db = null
 
-        var db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
-      
+        if (navigator.userAgent.match(/(Android)/)) {
+            db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+            console.log('DB: SQLite');
+        
+        } else {
+        
+            db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+            console.log('DB: WebSQL');
+        }
         db.transaction(function(tx) {
  
                 tx.executeSql("UPDATE multisig_addresses_ethereum SET address = ? WHERE address = ?", [address, ""]);

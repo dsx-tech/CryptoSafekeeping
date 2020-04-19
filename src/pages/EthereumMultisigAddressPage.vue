@@ -1,5 +1,56 @@
 <template>
  <div class="q-pa-sm">
+  <q-dialog v-model="scanOwner" transition-show="rotate" transition-hide="rotate">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Scan new address or add from existing wallets?</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="Scan new" color="primary" v-close-popup @click="turnCameraOn()"/>
+        <q-btn flat label="From existing" color="primary" v-close-popup @click="choiceOwner = true"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="overridesGas">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Enter parameters of transaction</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-input filled v-model="gasLimit" label="Gas limit"/>
+        <q-input filled v-model="gasPrice" label="Gas Price in gwei"/>
+        <q-input filled v-model="nonceSender" label="Nonce"/>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="Create" color="primary" v-close-popup @click="createWallet()"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="choiceOwner"  v-close-popup>
+    <q-card>
+      <q-card-section>
+        <q-list>
+          <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
+
+            <q-item-section>
+              <q-item-label @click= "keylist.push(contact.address); choiceOwner = false">{{ contact.name }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
   <div class="no-margin wallet-properties">
     <div v-if="showCodeTransaction">
       <canvas id="qr-transaction">
@@ -27,27 +78,29 @@
 
     <div>
       <h6>Choose single wallet for deploy creation</h6>
-      <q-list v-show="choiceSingle">
-        <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
+      <div>
+        <q-btn flat style="margin: auto" class="nextButton" label="choose wallet" v-show="btnChoice" @click="choiceSingle = true; btnChoice = false"/>
+        <q-list v-show="choiceSingle">
+          <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
 
-          <q-item-section>
-            <q-item-label @click= "chooseWallet(contact.name, contact.key)">{{ contact.name }}</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-
+            <q-item-section>
+              <q-item-label @click= "chooseWallet(contact.name, contact.key)">{{ contact.name }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
       <div class="chose row" v-show="choseSingle">
         <p class="col" style="margin: auto">{{ nameSingle }} </p>
-        <q-btn flat class="nextButton col" id="activateChoice" label="change main wallet" @click="activateChoice()"/>
+        <q-btn flat class="nextButton col" id="activateChoice" label="change wallet" @click="activateChoice()"/>
       </div>
     </div>
 
   </div>
 
   <div class="col text-center">
-      <q-btn label="Add holder" class="nextButton" @click="turnCameraOn()" v-show="!showCamera"/>
+      <q-btn label="Add holder" class="nextButton" @click="checkOwnersNumber()" v-show="!showCamera"/>
       <q-btn label="Import wallet address" class="nextButton" @click="importAddress()" v-show="!showCamera"/>
-      <q-btn label="Create wallet" class="nextButton" @click="createWallet()" />
+      <q-btn label="Create wallet" class="nextButton" @click="overridesGas = true" />
       <q-btn label="Create transaction" class="nextButton" @click="createTransaction()" />
       <div v-if="showCamera">
         <qrcode-stream :camera="camera" @decode="onDecode">
@@ -60,7 +113,7 @@
   </div>
 
   <q-card-actions align="right" class="text-primary">
-    <q-btn flat label="Cancel" @click="cancel()"/>
+    <q-btn flat label="Back" @click="Back()"/>
 
     <q-btn flat label="Save" @click="SaveAddresses()" v-close-popup />
   </q-card-actions>
@@ -88,7 +141,6 @@
     <canvas id="qr-transaction-19" class="qr-code"></canvas>
     <canvas id="qr-transaction-20" class="qr-code"></canvas>
   </div>
-    <button @click="Back()">Back</button>
  </div>
 </template>
 
@@ -162,12 +214,18 @@ export default{
     showCameraTransaction: false,
     showAllCodes: false,
     showCodeTransaction: false,
-    isCreated: this.$route.params.address != 'null',
     contacts: this.$route.params.contacts,
     nameSingle: null,
     choseSingle: false,
-    choiceSingle: true,
+    choiceSingle: false,
     pKey: null,
+    btnChoice: true,
+    scanOwner: false,
+    choiceOwner: false,
+    gasPrice: null,
+    gasLimit: null,
+    overridesGas: null,
+    nonceSender: null
    }
   },
   
@@ -231,23 +289,20 @@ export default{
       this.camera = 'off'
       this.showCamera = false
     },
-    Back(){
-      this.$router.push ({name: 'Ethereum' })
-    },
     SaveAddresses(){
       let keyListStr = "";
       this.keylist.forEach(element => keyListStr += element.toString() + ';')
-      console.log('addres for update =' + this.address)
-      console.log('name for update =' + this.name)
-      managBD.UpdateMultisigDb(this.address[0], this.pKey, this.name, keyListStr)
+      managBD.UpdateMultisigDb(this.address[0], this.name, keyListStr)
       alert("Saved successfully")
     },
-    cancel(){
+    Back(){
       for (var i = 1; i < 99999; i++)
         window.clearInterval(i);
       this.$router.push ({name: 'Ethereum' })
     },
     createWallet(){
+      var ethers = require('ethers')
+      this.SaveAddresses()
       console.log(this.pKey)
       if (this.pKey == null) alert("Choose the single wallet for deploying Transaction")
       else {
@@ -265,16 +320,29 @@ export default{
             let owners = this.keylist.filter(function (el) {
                 return el != "";
               })
+            let overrides = {
+                gasLimit: parseInt(this.gasLimit),
+                gasPrice: ethers.utils.parseUnits(this.gasPrice, 'gwei'),
+                nonce: 1,
+                chainId: 3
+            }
+
+            
+        //  overrides = {
+        //     gasLimit: 8000000,
+        //     gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
+        //     nonce: 1,
+        //     chainId: 3
+        // }
             console.log(owners)
-            Address.newMultisigAddress(this.pKey, this.holders, owners)
+            Address.newMultisigAddress(this.pKey, this.holders, owners, overrides)
           }
-          this.isCreated = true
         }
       }
     },
 
     importAddress () {
-      if (!this.isCreated)
+      if (!this.$route.params.address)
         alert("You cannot import address before creation.")
       else {
         if (this.$q.platform.is.mobile){
@@ -350,6 +418,11 @@ export default{
     },
     hideCodeTransaction(){
       this.showCodeTransaction = false
+    },
+    checkOwnersNumber(){
+      if (Object.keys(this.keylist).length < this.holders) 
+        this.scanOwner = true; 
+      else alert( 'You have enough owners') 
     }
 
     
