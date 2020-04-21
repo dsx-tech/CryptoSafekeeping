@@ -31,7 +31,7 @@ export default {
         
         let iface = new ethers.utils.Interface(abiJSON);
         let func = iface.functions.submitTransaction;
-        transaction.data = func.encode([tokenAddress, 0, '0xa9059cbb000000000000000000000000' + transaction.to + '00000000000000000000000000000000000000000000000000000000000003e8']),
+        transaction.data = func.encode([tokenAddress, 0, '0xa9059cbb000000000000000000000000' + transaction.to.substr(2, transaction.to.lenght) + '00000000000000000000000000000000000000000000000000000000000003e8']),
         transaction.to = contractAddress;
         transaction.value = 0
 

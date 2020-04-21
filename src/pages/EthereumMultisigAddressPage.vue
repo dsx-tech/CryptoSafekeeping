@@ -51,50 +51,52 @@
     </q-card>
   </q-dialog>
 
-  <div class="no-margin wallet-properties">
-    <div v-if="showCodeTransaction">
-      <canvas id="qr-transaction">
-      </canvas>
-      <q-btn label="hide" class="nextButton" @click="hideCodeTransaction()"/>
-    </div>
-    <h6> Your name:</h6>
-    <p> {{name}} </p>
-    <h6> Your address:</h6>
-    <p> {{address[0]}} </p>
-    <h6> Needed signers for transactiom:</h6>
-    <p> {{signs}} </p>
-    <h6> Holders of wallet:</h6>
-    <p> {{holders}} </p>
+  <div class="row">
+    <div class="wallet-properties col">
+      <div v-if="showCodeTransaction">
+        <canvas id="qr-transaction">
+        </canvas>
+        <q-btn label="hide" class="nextButton" @click="hideCodeTransaction()"/>
+      </div>
+      <h6> Your name:</h6>
+      <p> {{name}} </p>
+      <h6> Your address:</h6>
+      <p> {{address[0]}} </p>
+      <h6> Needed signers for transactiom:</h6>
+      <p> {{signs}} </p>
+      <h6> Holders of wallet:</h6>
+      <p> {{holders}} </p>
 
-    <h6>Owners:</h6>
-   
-    <q-list>
-      <q-item v-for="item in keylist" :key="item" class="q-my-sm" clickable v-ripple>
-        <q-item-section>
-          <q-item-label>{{ item }}</q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
+      <h6>Owners:</h6>
+    
+      <q-list>
+        <q-item v-for="item in keylist" :key="item" class="q-my-sm" clickable v-ripple>
+          <q-item-section>
+            <q-item-label>{{ item }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
 
-    <div>
-      <h6>Choose single wallet for deploy creation</h6>
       <div>
-        <q-btn flat style="margin: auto" class="nextButton" label="choose wallet" v-show="btnChoice" @click="choiceSingle = true; btnChoice = false"/>
-        <q-list v-show="choiceSingle">
-          <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
+        <h6>Choose single wallet for deploy creation</h6>
+        <div>
+          <q-btn flat style="margin: auto" class="nextButton" label="choose wallet" v-show="btnChoice" @click="choiceSingle = true; btnChoice = false"/>
+          <q-list v-show="choiceSingle">
+            <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
 
-            <q-item-section>
-              <q-item-label @click= "chooseWallet(contact.name, contact.key)">{{ contact.name }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+              <q-item-section>
+                <q-item-label @click= "chooseWallet(contact.name, contact.key)">{{ contact.name }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+        <div class="chose row" v-show="choseSingle">
+          <p class="col" style="margin: auto">{{ nameSingle }} </p>
+          <q-btn flat class="nextButton col" id="activateChoice" label="change wallet" @click="activateChoice()"/>
+        </div>
       </div>
-      <div class="chose row" v-show="choseSingle">
-        <p class="col" style="margin: auto">{{ nameSingle }} </p>
-        <q-btn flat class="nextButton col" id="activateChoice" label="change wallet" @click="activateChoice()"/>
-      </div>
+
     </div>
-
   </div>
 
   <div class="col text-center">
@@ -102,6 +104,10 @@
       <q-btn label="Import wallet address" class="nextButton" @click="importAddress()" v-show="!showCamera"/>
       <q-btn label="Create wallet" class="nextButton" @click="overridesGas = true" />
       <q-btn label="Create transaction" class="nextButton" @click="createTransaction()" />
+      <q-btn label="Transfer ERC-20 tokens" class="nextButton" @click="tokens = true; createTransaction()" />
+      <h6 v-if="trDetails">Scan transactiom details</h6>
+      <h6 v-if="tokenAddres">Scan token address</h6>
+      <h6 v-if="walletAddres">Scan wallet address</h6>
       <div v-if="showCamera">
         <qrcode-stream :camera="camera" @decode="onDecode">
         </qrcode-stream>
@@ -193,6 +199,7 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import managBD from '../scripts/Ethereum/ManagBD.js'
 import Address from '../scripts/Ethereum/Address.js'
 import Transaction from '../scripts/Ethereum/Transaction.js'
+import ERC20 from '../scripts/Ethereum/ERC20Token.js'
 
 export default{
   name: 'PageIndex',
@@ -225,7 +232,13 @@ export default{
     gasPrice: null,
     gasLimit: null,
     overridesGas: null,
-    nonceSender: null
+    nonceSender: null,
+    networkId: 3,
+    tokens: false,
+    tempTransaction: null,
+    walletAddres: false,
+    tokenAddres: false,
+    trDetails: false
    }
   },
   
@@ -234,10 +247,21 @@ export default{
   methods: {
 
     async onDecode (content) {
-      this.result = content
-      this.turnCameraOff()
+      if (!this.tokens){
+        this.walletAddres = false
+        this.address = [content]
+        this.turnCameraOff()
+      }
+      else {
+        this.tokenAddres = false
+        ERC20.transferMulti(this.pKey, this.tempTransaction, content, this.address[0])
+        this.tokens = false
+        this.turnCameraOff()
+      }
+      
     },
     async onDecodeTransaction (content) {
+      this.trDetails = false
       this.result = content
       this.turnCameraOff()
       var ethers = require('ethers')
@@ -263,8 +287,12 @@ export default{
             data: json_result.data,
             chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
         }
-        Transaction.createMultiSigTransaction(this.pKey, transaction, this.address)
+
+        if (this.tokens)
+          this.tokenAddress(transaction)
+        else Transaction.createMultiSigTransaction(this.pKey, transaction, this.address[0])
         this.showCodeTransaction = true
+        this.showCameraTransaction = false
     },
     turnCameraOn () {
       if (this.$q.platform.is.mobile){
@@ -323,8 +351,8 @@ export default{
             let overrides = {
                 gasLimit: parseInt(this.gasLimit),
                 gasPrice: ethers.utils.parseUnits(this.gasPrice, 'gwei'),
-                nonce: 1,
-                chainId: 3
+                nonce: parseInt(this.nonceSender),
+                chainId: this.networkId
             }
 
             
@@ -334,31 +362,50 @@ export default{
         //     nonce: 1,
         //     chainId: 3
         // }
-            console.log(owners)
+            console.log(overrides)
             Address.newMultisigAddress(this.pKey, this.holders, owners, overrides)
+            this.SaveAddresses()
           }
         }
       }
     },
 
     importAddress () {
-      if (!this.$route.params.address)
-        alert("You cannot import address before creation.")
+      this.walletAddres = true
+      if (this.$q.platform.is.mobile){
+        let temp = []
+        this.address = temp
+        cordova.plugins.barcodeScanner.scan(
+          function (result) {
+            alert(result.text)
+            temp.push(result.text)
+          }
+        )
+        this.SaveAddresses()
+      }
       else {
-        if (this.$q.platform.is.mobile){
-          let temp = []
-          this.address = temp
-          cordova.plugins.barcodeScanner.scan(
-            function (result) {
-              alert(result.text)
-              temp.push(result.text)
-            }
-          )
-        }
-        else {
-          this.camera = 'auto'
-          this.showCamera = true
-        }
+        this.camera = 'auto'
+        this.showCamera = true
+      }
+    },
+
+    tokenAddress(transaction){
+      this.tokenAddres = true
+      if (this.$q.platform.is.mobile){
+        let privateKey = this.pKey
+        let contractAddress = this.address[0]
+        cordova.plugins.barcodeScanner.scan(
+          function (result) {
+            alert(result.text)
+            ERC20.transferMulti(privateKey, transaction, result.text, contractAddress)
+          }
+        )
+        this.SaveAddresses()
+      }
+      else {
+        this.tempTransaction = transaction
+        this.camera = 'auto'
+        this.showCamera = true
       }
     },
 
@@ -367,6 +414,7 @@ export default{
       else {
         if (this.$route.params.address == 'null') alert("You have to import wallet address.")
         else {
+          this.trDetails = true
           if (this.$q.platform.is.mobile) {
             let pKey = this.pKey;
             let address = this.address[0];
@@ -393,7 +441,11 @@ export default{
                       data: json_result.data,
                       chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
                   }
-                  Transaction.createMultiSigTransaction(pKey, transaction, address)
+                  this.trDetails = false
+                  if (this.tokens)
+                    this.tokenAddress(transaction)
+                  else Transaction.createMultiSigTransaction(pKey, transaction, address)
+                  this.showCodeTransaction = true
               }
             )
             this.showCodeTransaction = true
@@ -424,7 +476,6 @@ export default{
         this.scanOwner = true; 
       else alert( 'You have enough owners') 
     }
-
     
   }
 }

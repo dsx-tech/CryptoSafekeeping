@@ -188,11 +188,10 @@ export default {
 
       }
     }, reject => {
-      console.log(err)
+      console.log("Error: invalid input transaction data")
     })
   },
 
-  //to do arguments: wallet, transaction
   createMultiSigTransaction(privateKey, transaction, contractAddress){
     let provider = ethers.getDefaultProvider('ropsten');
     
@@ -222,7 +221,7 @@ export default {
     transaction.to = contractAddress;
     transaction.value = 0;
 
-    this.signing(wallet, transaction)
+    this.signing(wallet, transaction, false)
   },
 
   
