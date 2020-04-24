@@ -1,5 +1,5 @@
 <template>
- <div class="q-pa-sm">
+ <div class="q-pa-sm main">
   <q-dialog v-model="scanOwner" transition-show="rotate" transition-hide="rotate">
     <q-card>
       <q-card-section>
@@ -51,22 +51,31 @@
     </q-card>
   </q-dialog>
 
-  <div class="row">
-    <div class="wallet-properties col">
+  <div class="row wallet-properties justify-center">
+    <div class="col">
       <div v-if="showCodeTransaction">
         <canvas id="qr-transaction">
         </canvas>
         <q-btn label="hide" class="nextButton" @click="hideCodeTransaction()"/>
       </div>
-      <h6> Your name:</h6>
-      <p> {{name}} </p>
-      <h6> Your address:</h6>
-      <p> {{address[0]}} </p>
-      <h6> Needed signers for transactiom:</h6>
-      <p> {{signs}} </p>
-      <h6> Holders of wallet:</h6>
-      <p> {{holders}} </p>
-
+      <div class="justify-center">
+        <div  class="prop-text rounded-borders text-center">
+          <h6> Your name:</h6>
+          <p> {{name}} </p>
+        </div>
+        <div  class="prop-text rounded-borders text-center">
+          <h6> Your address:</h6>
+          <p> {{address[0]}} </p>
+        </div>
+        <div  class="prop-text rounded-borders text-center">
+          <h6> Needed signers for transactiom:</h6>
+          <p> {{signs}} </p>
+        </div>
+        <div  class="prop-text rounded-borders text-center">
+          <h6> Holders of wallet:</h6>
+          <p> {{holders}} </p>
+        </div>
+      </div>
       <h6>Owners:</h6>
     
       <q-list>
@@ -126,38 +135,29 @@
 
   <div class="wrap-code" v-show="showAllCodes">
     <canvas id="qr-transaction"></canvas>
-    <canvas id="qr-transaction-1" class="qr-code"></canvas>
-    <canvas id="qr-transaction-2" class="qr-code"></canvas>
-    <canvas id="qr-transaction-3" class="qr-code"></canvas>
-    <canvas id="qr-transaction-4" class="qr-code"></canvas>
-    <canvas id="qr-transaction-5" class="qr-code"></canvas>
-    <canvas id="qr-transaction-6" class="qr-code"></canvas>
-    <canvas id="qr-transaction-7" class="qr-code"></canvas>
-    <canvas id="qr-transaction-8" class="qr-code"></canvas>
-    <canvas id="qr-transaction-9" class="qr-code"></canvas>
-    <canvas id="qr-transaction-10" class="qr-code"></canvas>
-    <canvas id="qr-transaction-11" class="qr-code"></canvas>
-    <canvas id="qr-transaction-12" class="qr-code"></canvas>
-    <canvas id="qr-transaction-13" class="qr-code"></canvas>
-    <canvas id="qr-transaction-14" class="qr-code"></canvas>
-    <canvas id="qr-transaction-15" class="qr-code"></canvas>
-    <canvas id="qr-transaction-16" class="qr-code"></canvas>
-    <canvas id="qr-transaction-17" class="qr-code"></canvas>
-    <canvas id="qr-transaction-18" class="qr-code"></canvas>
-    <canvas id="qr-transaction-19" class="qr-code"></canvas>
-    <canvas id="qr-transaction-20" class="qr-code"></canvas>
   </div>
  </div>
 </template>
 
 <style scoped>
+  .main{
+    background-color: white;
+  }
+  .prop-text{
+    background: rgb(19,78,94);
+    background: linear-gradient(90deg, rgba(19,78,94,1) 0%, rgba(113,178,128,1) 100%);
+    margin-top: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: aliceblue;
+  }
   .class {
     width: 100%;
   }
   .wallet-properties{
     color: rgb(105, 105, 105);
-    padding: 5%;
-
+    width: 60%;
+    margin: auto;
   }
   h6{
     margin-top: 30px;
@@ -204,6 +204,11 @@ import ERC20 from '../scripts/Ethereum/ERC20Token.js'
 export default{
   name: 'PageIndex',
   components: { QrcodeStream },
+
+  beforeDestroy(){
+    for (var i = 1; i < 99999; i++)
+      window.clearInterval(i);
+  },
   data(){
    return{
     show: false, 

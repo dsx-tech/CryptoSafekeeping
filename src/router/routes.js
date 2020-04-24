@@ -15,6 +15,7 @@ const routes = [
       { path: '/ethereum', component: () => import('pages/EthereumPage.vue'), name: 'Ethereum' },
       { path: '/startPage', component: () => import('pages/Index.vue') },
       { path: '/settingsAddress/:name?', component: () => import('pages/SettingsAddress.vue'), name: 'SettingsPage' },
+      { path: '/scanMultiCode', component: () => import('pages/ScanMultiCodePage.vue') },
     ]
   }
 ]
