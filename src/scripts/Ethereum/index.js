@@ -5,18 +5,9 @@ import QRcode from './QRcode.js';
 import ERC20Token from './ERC20Token.js';
 import File from '../filesystem.js';
 import managBD from './ManagBD.js';
+import { QrcodeStream } from 'vue-qrcode-reader'
 
 let contacts = [];
-// [ 
-//   {name: 'first', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a', address: 'test address'}, //0x55D73ccA422253a8a287074c6f4857Dd15EFdC46
-//     //4 ethers
-//   {name: 'second', key: '0x1778b368d6847f01cc48dc891598675db61500b31cfe6448eb564ccfdcab698c', address: 'test address'}, // 0x00F7357E503B6cE0622Cf5311739dA27EDF4a875
-//     //3 ethers
-//   {name: 'third', key: '0x8358a123d279423f239dc2cbc5dede46975f9de654d800f594cbab4ae8faea34', address: 'test address'}, //0xCe39AB30911Eeb024eB6316123339A4893337639
-//   {name: 'fourth', key: '0x51cf48d3ac567c2cf65540d49f92cb8f50bba3a8b9b329814d96ad188dd70da8', address: 'test address'}, //0xE704eBE589b6ac907887D1997df7BF69A50D416E
-// 	{name: 'fifth', key: '0x6aa6b11778e120f4e856693953c07b2c679397763fa8afc6d5984425bc456f1a', address: 'test address'},
-// 	{name: 'sixth', key: '0x9EA9EDB02DEA132BBF903299397496E51B6068D12DA040F0BD9FC503F60673B0', address: 'test address'}, //0x98773812A261A98Bb73d00EC9B72dEA0BD2a9479
-// ]
 
 const multisigContacts = [ {
   name: 'name 1',
@@ -41,17 +32,22 @@ const multisigContacts = [ {
 }]
 
 export default {
+  name: 'PageIndex',
+  components: { QrcodeStream },
   data () {
     return {
       contacts,
       multisigContacts,
       inception: false,
+      importKey: false,
       CountDialog: false,
       CountRequared: false,
       countHolders: '',
       countSigns: '',
       tab: 'addresses',
-      walletName: ''
+      walletName: '',
+      showCamera: false,
+      walletNameImport: ''
     }
   },
   
@@ -69,7 +65,6 @@ export default {
       let address = result[0]
       let pKey = result[1]
       this.contacts.push({ address: address, key: pKey, name: walletName })
-      //File.write('SingleSigEthereum.json', contacts);
       managBD.InsertAddressDb(address, walletName.toString(), pKey)
     },
 
@@ -196,8 +191,45 @@ export default {
     GoToCreationMultisigAddress (walletName) {
       this.$router.push({ name: 'EthereumMultisigCreation', params: {walletName: walletName} })
      },
-     GoBack () {
+
+    ImportKey(walletName) {
+      if (this.$q.platform.is.mobile){
+        cordova.plugins.barcodeScanner.scan(
+          function (resultKey) {
+            alert(resultKey.text)
+            let result = Addresses.newAddress(resultKey.text);
+            let address = result[0]
+            let pKey = result[1]
+            this.contacts.push({ address: address, key: pKey, name: walletName })
+            managBD.InsertAddressDb(address, walletName.toString(), pKey)
+          }
+        )
+      }
+      else {
+        this.walletNameImport = walletName
+        this.camera = 'auto'
+        this.showCamera = true
+      }
+    },
+
+    turnCameraOff () {
+      this.camera = 'off'
+      this.showCamera = false
+    },
+
+    async onDecode (content) {
+      alert(content)
+      let wallet = new ethers.Wallet(content);
+      let pKey = wallet.privateKey;
+      let address = wallet.address;
+      this.contacts.push({ address: address, key: pKey, name: this.walletNameImport })
+      managBD.InsertAddressDb(address, this.walletName.toString(), pKey)
+      this.turnCameraOff()
+    },
+
+    GoBack () {
       this.$router.go(-1)
     },
+
   }
 }

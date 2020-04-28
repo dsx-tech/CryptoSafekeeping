@@ -7,7 +7,7 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-input dense v-model="walletName" autofocus @keyup.enter="CountDialog = false"  />
+          <q-input dense v-model="walletName" autofocus />
         </q-card-section>
 
         <q-card-section>
@@ -21,6 +21,27 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="importKey">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Enter wallet name</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input dense v-model="walletName" autofocus @keyup.enter="CountDialog = false"  />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" @click="importKey = false" v-close-popup/>
+          <q-btn flat label="Import key" @click="ImportKey(String(walletName))" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <div v-if="showCamera">
+      <qrcode-stream :camera="camera" @decode="onDecode">
+      </qrcode-stream>
+    </div>
 
 
     <div class="q-pa-md" style="max-width: 600px">
@@ -60,13 +81,14 @@
                     <q-item-label @click="GoToMultisigAddress(multisigContact.holders, multisigContact.signs, multisigContact.keylist, multisigContact.address, multisigContact.name)">{{ multisigContact.name }}</q-item-label>
                 </q-item-section>
                   </q-item>
-                  </q-list>
+            </q-list>
           </q-tab-panel>
 
         </q-tab-panels>
       </q-card>
 
       <q-item class="flex flex-center">
+        <button class="nextButton" @click="importKey = true"> Import private key </button>
         <button class="nextButton" @click="inception = true"> New Address </button>
       </q-item>
 

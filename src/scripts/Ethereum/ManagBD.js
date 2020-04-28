@@ -16,7 +16,7 @@ export default {
     db.transaction(function(tx) {
     // tx.executeSql('DROP TABLE IF EXISTS addresses');
     //create table
-    tx.executeSql("CREATE TABLE IF NOT EXISTS addresses_ethereum (address text primary key, name text, key text)", [], function(tx, res){
+    tx.executeSql("CREATE TABLE IF NOT EXISTS addresses_ethereum (address text, name text primary key, key text)", [], function(tx, res){
 
     db.transaction(function(tx) {                    
                 //retrieve data

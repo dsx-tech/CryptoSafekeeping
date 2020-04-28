@@ -1,12 +1,28 @@
 <template>
-  <q-page class="row full-height items-center">
-    <div class="btn-group">
-    <Button class="mainButton" @click="scan()">Scan Multi code</Button>
-    </div>
-    <div v-if="showCamera">
+  <q-page class="column items-center">
 
-      <qrcode-stream :camera="camera" @decode="onDecode">
-      </qrcode-stream>
+  <q-dialog v-model="showString">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Scanned string:</div>
+        <div class="text-h6">{{resultString}}</div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
+    
+    <div class="btn-group column">
+        <div class="col">
+          <h6>Scanned codes: {{numberOfCodes}} / 20</h6>
+        </div>
+
+        <Button class="nextButton col" @click="scan()">Scan Multi code</Button>
+        <Button class="nextButton col" @click="showCamera = false">Turn camera off</Button>
+    
+        <div v-if="showCamera" class="col">
+          <qrcode-stream :camera="camera" @decode="onDecode">
+          </qrcode-stream>
+        </div>
     </div>
   </q-page>
 </template>
@@ -18,15 +34,22 @@ body {
   height: 100%;
 }
 
-.btn-group button {
+.btn-group{
     display: block; /* Make the buttons appear below each other */
     width: 100%;
     top: 50%;
-    left: 33%;
+}
+
+.column h6 {
+  text-decoration: none;
+  color: white;
+  display: inline-block;
+  padding: 20px 30px;
+  margin: auto;
+  text-align: center;
 }
 
 .mainButton {
- 
   text-decoration: none;
   outline: none;
   display: inline-block;
@@ -120,7 +143,10 @@ export default {
       result: null,
       showCamera: false,
       qrCodes: [],
-      codeSize: 20
+      codeSize: 20,
+      numberOfCodes: 0,
+      showString: false,
+      resultString: ''
     }
   },
   methods: {
@@ -130,6 +156,7 @@ export default {
       if (!this.qrCodes.includes(content))
         {
           this.qrCodes.push(content)
+          this.numberOfCodes = this.numberOfCodes + 1
         }
       if (this.qrCodes.length == this.codeSize){
         this.turnCameraOff()
@@ -143,6 +170,8 @@ export default {
           str += arrStr[i][1]
         }
         console.log(str)
+        this.resultString = str
+        this.showString = true
       }
     },
     scan () {

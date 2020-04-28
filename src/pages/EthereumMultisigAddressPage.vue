@@ -1,5 +1,42 @@
 <template>
  <div class="q-pa-sm main">
+   
+  <q-dialog v-model="manualParameters">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Enter parameters of transaction</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-input filled autofocus v-model="trGasLimit" label="Gas limit"/>
+        <q-input filled autofocus v-model="trGasPrice" label="Gas Price in gwei"/>
+        <q-input filled autofocus v-model="trNonceSender" label="Nonce"/>
+        <q-input filled autofocus v-model="trValue" label="Value"/>
+        <q-input filled autofocus v-model="trData" label="Data"/>
+        <q-input filled autofocus v-model="trAddress" label="Address"/>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="Sign" color="primary" v-close-popup  @click="signManual(String(trGasLimit), String(trGasPrice), String(trNonceSender), String(trValue), String(trData), String(trAddress))"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="typeEntering">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Chose the type of entering parameters</div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat label="Manual" @click="manualParameters = true" v-close-popup/>
+        <q-btn flat label="By QR-code" @click="createTransaction()" v-show="!showCamera" v-close-popup/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+
   <q-dialog v-model="scanOwner" transition-show="rotate" transition-hide="rotate">
     <q-card>
       <q-card-section>
@@ -112,7 +149,7 @@
       <q-btn label="Add holder" class="nextButton" @click="checkOwnersNumber()" v-show="!showCamera"/>
       <q-btn label="Import wallet address" class="nextButton" @click="importAddress()" v-show="!showCamera"/>
       <q-btn label="Create wallet" class="nextButton" @click="overridesGas = true" />
-      <q-btn label="Create transaction" class="nextButton" @click="createTransaction()" />
+      <q-btn label="Create transaction" class="nextButton" @click="typeEntering = true" />
       <q-btn label="Transfer ERC-20 tokens" class="nextButton" @click="tokens = true; createTransaction()" />
       <h6 v-if="trDetails">Scan transactiom details</h6>
       <h6 v-if="tokenAddres">Scan token address</h6>
@@ -243,7 +280,15 @@ export default{
     tempTransaction: null,
     walletAddres: false,
     tokenAddres: false,
-    trDetails: false
+    trDetails: false,
+    manualParameters: false,
+    typeEntering: false,
+    trAddress: '',
+    trData: '',
+    trValue: '',
+    trNonceSender: '',
+    trGasPrice: '',
+    trGasLimit: ''
    }
   },
   
@@ -326,7 +371,7 @@ export default{
       let keyListStr = "";
       this.keylist.forEach(element => keyListStr += element.toString() + ';')
       managBD.UpdateMultisigDb(this.address[0], this.name, keyListStr)
-      alert("Saved successfully")
+      alert("Saved owners successfully")
     },
     Back(){
       for (var i = 1; i < 99999; i++)
@@ -369,7 +414,6 @@ export default{
         // }
             console.log(overrides)
             Address.newMultisigAddress(this.pKey, this.holders, owners, overrides)
-            this.SaveAddresses()
           }
         }
       }
@@ -480,8 +524,23 @@ export default{
       if (Object.keys(this.keylist).length < this.holders) 
         this.scanOwner = true; 
       else alert( 'You have enough owners') 
-    }
-    
+    },
+    signManual(trGasLimit, trGasPrice, trNonceSender, trValue, trData, trAddress){
+        var ethers = require('ethers')
+
+        let transaction = {
+              nonce: parseFloat(trNonceSender),
+              gasLimit: parseFloat(trGasLimit),
+              gasPrice: ethers.utils.bigNumberify(trGasPrice)._hex,
+              to: trAddress,
+              value: ethers.utils.parseEther(trValue + "")._hex,
+              data: trData,
+              chainId: ethers.utils.getNetwork(this.networkId).chainId    
+          }
+
+          let wallet = new ethers.Wallet(this.key)
+          Transaction.signing(wallet, transaction)
+      },
   }
 }
 </script>
