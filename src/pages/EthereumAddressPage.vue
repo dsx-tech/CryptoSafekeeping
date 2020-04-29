@@ -1,5 +1,18 @@
 <template>
  <div class="q-pa-sm">
+  <q-dialog v-model="deleting">
+    <q-card>
+      <q-card-section>
+        All your funds will be lost! Do you really want to delete the wallet?
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="Delete" color="primary" v-close-popup @click="removeWallet()"/>
+      </q-card-actions>
+
+    </q-card>
+  </q-dialog>
+
   <q-dialog v-model="overridesGas">
     <q-card>
       <q-card-section>
@@ -68,6 +81,10 @@
       <h6> Your private key: </h6>
       <p> {{key}} </p>
     </div>
+    <div>
+      <h6> Net: </h6>
+      <p> {{net}} </p>
+    </div>
   </div>
   <div v-show="showCode" class="flex flex-center">
     <canvas id="qr">
@@ -86,6 +103,7 @@
     <q-btn class="nextButton col" label="Sign transaction"  @click="typeEntering = true" v-show="!showCamera"/>
     <q-btn class="nextButton col" label="Send tokens"  @click="tokens = true; turnCameraOn()" v-show="!showCamera"/>
     <q-btn class="nextButton col" label="Confirm transaction"  @click="overridesGas = true" v-show="!showCamera"/>
+    <q-btn class="nextButton col" label="Remove the wallet"  @click="deleting = true" v-show="!showCamera"/>
    </div>
    <q-btn color="black" label="Back" @click="back()"/>
    <h6 v-if="trDetails">Scan transactiom details</h6>
@@ -93,7 +111,6 @@
           <q-btn color="black" label="Close" @click="turnCameraOff()"/>
           <qrcode-stream :camera="camera" @decode="onDecode">
           </qrcode-stream>
-          
     </div>
     <canvas id="qr-transaction">
     </canvas>
@@ -108,6 +125,8 @@
   import QRcode from '../scripts/Ethereum/QRcode.js';
   import Transaction from '../scripts/Ethereum/Transaction.js';
   import ERC20 from '../scripts/Ethereum/ERC20Token.js';
+  import managBD from '../scripts/Ethereum/ManagBD.js';
+
   var QRious = require('QRious')
 
 
@@ -137,6 +156,7 @@
       key: this.$route.params.key,
       name: this.$route.params.name,
       address: this.$route.params.address,
+      net: this.$route.params.net,
       showCode: false,
       isValid: undefined,
       camera: 'auto',
@@ -161,7 +181,8 @@
       trValue: '',
       trNonceSender: '',
       trGasPrice: '',
-      trGasLimit: ''
+      trGasLimit: '',
+      deleting: false
     }
     },
     methods:{
@@ -172,7 +193,7 @@
             gasLimit: parseInt(this.gasLimit),
             gasPrice: ethers.utils.parseUnits(this.gasPrice, 'gwei'),
             nonce: parseInt(this.nonceSender),
-            chainId: this.networkId
+            chainId: this.net
         }
         Transaction.confirmMultisigTransaction(this.key, overrides, content, this.trNumber)
         this.confirmation = false
@@ -214,7 +235,7 @@
                     'Value: ' + json_result.value + '\n' +
                     'nonce: ' + json_result.nonce + '\n' +
                     'data: ' + json_result.data + '\n' +
-                    'chain: ' + json_result.chainId
+                    'chain: ' + this.net
         )
 
         let transaction = {
@@ -224,7 +245,7 @@
               to: json_result.to, 
               value: ethers.utils.parseEther(json_result.value + "")._hex,
               data: json_result.data,
-              chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
+              chainId: ethers.utils.getNetwork(this.net).chainId    
           }
 
           if (this.tokens){
@@ -254,7 +275,7 @@
                           'Value: ' + json_result.value + '\n' +
                           'nonce: ' + json_result.nonce + '\n' +
                           'data: ' + json_result.data + '\n' +
-                          'chain: ' + json_result.chainId
+                          'chain: ' + ethers.utils.getNetwork(this.net).chainId  
               )
               let transaction = {
                     nonce: json_result.nonce,
@@ -263,7 +284,7 @@
                     to: json_result.to, 
                     value: ethers.utils.parseEther(json_result.value + "")._hex,
                     data: json_result.data,
-                    chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
+                    chainId: ethers.utils.getNetwork(this.net).chainId  
                 }
                 let wallet = new ethers.Wallet(this.key)
                 if (this.tokens)
@@ -313,6 +334,11 @@
 
         let wallet = new ethers.Wallet(this.key)
         Transaction.signing(wallet, transaction)
+      },
+
+      removeWallet(){
+        managBD.RemoveAddressDB(this.name)
+        this.$router.push ({name: 'Ethereum' })
       }
     }
   } 

@@ -4,15 +4,22 @@
     <div class="q-pa-md">
       <div class="q-pt-lg">
         <div>
-          <q-select outlined v-model="countHolders" :options="options" label="Number of owners"/>
+          <p>Wallet name:</p>
+          <q-input filled autofocus v-model="walletName" :placeholder="walletName"/>
         </div>
-        <div style="height: 50px">
+        <div>
+          <p>Number of owners:</p>
+          <q-select outlined v-model="countHolders" :options="options"/>
         </div>
         <div class="col-1">
-          <q-select outlined v-model="countSigns" :options="options" label="Number of signs for transaction"/>
+          <p>Number of signs for transaction:</p>
+          <q-select outlined v-model="countSigns" :options="options"/>
+        </div>
+        <div class="col-1">
+          <p>Choose the net:</p>
+          <q-select outlined v-model="chosenNet" :options="nets"/>
         </div>
       </div>
-  
     </div>
 
     <q-card-actions align="right" class="text-primary">
@@ -31,16 +38,6 @@
         </q-item-section>
       </q-item>
     </q-list>
-
-    <div class="col text-center">
-        <q-btn label="Add holder" class="nextButton" @click="turnCameraOn()" v-show="!showCamera"/>
-          <p class="text-subtitle1" v-if="address">Wallet address: <b>{{ address }}</b></p>
-        <div v-if="showCamera">
-
-          <qrcode-stream :camera="camera" @decode="onDecode">
-          </qrcode-stream>
-        </div>
-    </div>
 
 
   </q-page>
@@ -93,8 +90,10 @@ export default {
       camera: 'auto',
       result: null,
       showCamera: false,
+      nets: ['mainnet', 'ropsten', 'kovan', 'rinkeby', 'goerli'],
       options: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
       model: null,
+      chosenNet: ''
     }
   },
   
@@ -135,7 +134,7 @@ export default {
     SaveAddresses(){
       let keyList = "";
       this.multAddresses.forEach(element => keyList += element.toString() + ';')
-      managBD.InsertMultisigDb(null, this.walletName, this.countHolders, this.countSigns, keyList)
+      managBD.InsertMultisigDb(null, this.walletName, this.countHolders, this.countSigns, keyList, this.chosenNet)
       alert("Saved successfully")
     },
     cancel(){

@@ -14,16 +14,16 @@ export default {
     }
 
     db.transaction(function(tx) {
-    // tx.executeSql('DROP TABLE IF EXISTS addresses');
+    //tx.executeSql('DROP TABLE IF EXISTS addresses_ethereum');
     //create table
-    tx.executeSql("CREATE TABLE IF NOT EXISTS addresses_ethereum (address text, name text primary key, key text)", [], function(tx, res){
+    tx.executeSql("CREATE TABLE IF NOT EXISTS addresses_ethereum (address text, name text primary key, key text, net text)", [], function(tx, res){
 
     db.transaction(function(tx) {                    
                 //retrieve data
                 tx.executeSql("SELECT * FROM addresses_ethereum", [], function(tx, res){
                     for(var iii = 0; iii < res.rows.length; iii++)
                     {
-                        text.push({address: res.rows.item(iii).address, name: res.rows.item(iii).name, key: res.rows.item(iii).key})   
+                        text.push({address: res.rows.item(iii).address, name: res.rows.item(iii).name, key: res.rows.item(iii).key, net: res.rows.item(iii).net})   
                     }
                     console.log(text)
                     
@@ -54,16 +54,15 @@ export default {
           }
 
           db.transaction(function(tx) {
-           // tx.executeSql('DROP TABLE IF EXISTS multisigAddresses');
-            //create table
-            tx.executeSql("CREATE TABLE IF NOT EXISTS multisig_addresses_ethereum (name text primary key, address text, holders integer, signs integer, keylist text)", [], function(tx, res){
+            //tx.executeSql('DROP TABLE IF EXISTS multisig_addresses_ethereum');
+            tx.executeSql("CREATE TABLE IF NOT EXISTS multisig_addresses_ethereum (name text primary key, address text, holders integer, signs integer, keylist text, net text)", [], function(tx, res){
         
             db.transaction(function(tx) {                    
                         //retrieve data
                         tx.executeSql("SELECT * FROM multisig_addresses_ethereum", [], function(tx, res){
                             for(var iii = 0; iii < res.rows.length; iii++)
                             {
-                                text.push({name: res.rows.item(iii).name, address: res.rows.item(iii).address, holders: res.rows.item(iii).holders, signs: res.rows.item(iii).signs, keylist: res.rows.item(iii).keylist})   
+                                text.push({name: res.rows.item(iii).name, address: res.rows.item(iii).address, holders: res.rows.item(iii).holders, signs: res.rows.item(iii).signs, keylist: res.rows.item(iii).keylist, net: res.rows.item(iii).net})   
                             }
                             console.log(text)
                             
@@ -79,7 +78,7 @@ export default {
             return text
         },
     
-    InsertAddressDb(address, name, key) {
+    InsertAddressDb(address, name, key, net) {
         var db = null
 
         if (navigator.userAgent.match(/(Android)/)) {
@@ -95,7 +94,7 @@ export default {
           db.transaction(function(tx) {
       
                   //insert data
-                  tx.executeSql("INSERT INTO addresses_ethereum (address, name, key) VALUES (?,?,?)", [address, name, key]);
+                  tx.executeSql("INSERT INTO addresses_ethereum (address, name, key, net) VALUES (?,?,?,?)", [address, name, key, net]);
       
           }, function(err){
       
@@ -105,7 +104,7 @@ export default {
           });
       },
 
-    InsertMultisigDb(address, name, holders, signs, keylist) {
+    InsertMultisigDb(address, name, holders, signs, keylist, net) {
         var db = null
 
         if (navigator.userAgent.match(/(Android)/)) {
@@ -117,20 +116,21 @@ export default {
             db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
             console.log('DB: WebSQL');
         }
-      
-          db.transaction(function(tx) {
-   
-                  tx.executeSql("INSERT INTO multisig_addresses_ethereum (name, address, holders, signs, keylist) VALUES (?,?,?,?,?)", [name, address, holders, signs, keylist]);
-      
-          }, function(err){
-      
-              //errors for all transactions are reported here
-              alert("Error: " + err.message)
-      
-          });
+
+        
+
+        db.transaction(function(tx) {
+                tx.executeSql("INSERT INTO multisig_addresses_ethereum (name, address, holders, signs, keylist, net) VALUES (?,?,?,?,?,?)", [name, address, holders, signs, keylist, net]);
+    
+        }, function(err){
+    
+            //errors for all transactions are reported here
+            alert("Error: " + err.message)
+    
+        });
     },
 
-      UpdateMultisigDb(address, name, keylist) {
+    UpdateMultisigDb(address, name, keylist) {
         var db = null
 
         if (navigator.userAgent.match(/(Android)/)) {
@@ -142,16 +142,16 @@ export default {
             db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
             console.log('DB: WebSQL');
         }
-          db.transaction(function(tx) {
-                    console.log('updating' + address)
-                  tx.executeSql("UPDATE multisig_addresses_ethereum SET address = ?, keylist = ? WHERE name = ?", [address, keylist, name]);
-      
-          }, function(err){
-      
-              //errors for all transactions are reported here
-              alert("Error: " + err.message)
-      
-          });
+        db.transaction(function(tx) {
+                console.log('updating' + address)
+                tx.executeSql("UPDATE multisig_addresses_ethereum SET address = ?, keylist = ? WHERE name = ?", [address, keylist, name]);
+    
+        }, function(err){
+    
+            //errors for all transactions are reported here
+            alert("Error: " + err.message)
+    
+        });
       },
 
 
@@ -201,5 +201,57 @@ export default {
             alert("Error: " + err.message)
     
         });
+      },
+
+      RemoveAddressDB(name){
+        var db = null
+
+        if (navigator.userAgent.match(/(Android)/)) {
+            db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+            console.log('DB: SQLite');
+        
+        } else {
+        
+            db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+            console.log('DB: WebSQL');
+        }
+      
+          db.transaction(function(tx) {
+      
+                  //insert data
+                  tx.executeSql("DELETE FROM addresses_ethereum WHERE name = ?", [name]);
+      
+          }, function(err){
+      
+              //errors for all transactions are reported here
+              alert("Error: " + err.message)
+      
+          });
+      },
+
+      RemoveMultiAddressDB(name){
+        var db = null
+
+        if (navigator.userAgent.match(/(Android)/)) {
+            db = window.sqlitePlugin.openDatabase({name: "Addresses.db"});
+            console.log('DB: SQLite');
+        
+        } else {
+        
+            db = window.openDatabase('Addresses.db', "0.1", "Addresses.db description", 200000);    
+            console.log('DB: WebSQL');
+        }
+      
+          db.transaction(function(tx) {
+      
+                  //insert data
+                  tx.executeSql("DELETE FROM multisig_addresses_ethereum WHERE name = ?", [name]);
+      
+          }, function(err){
+      
+              //errors for all transactions are reported here
+              alert("Error: " + err.message)
+      
+          });
       }
 }

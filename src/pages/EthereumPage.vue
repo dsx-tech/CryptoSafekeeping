@@ -1,5 +1,25 @@
 <template>
   <q-page>
+    <q-dialog v-model="creating">
+      <q-card>
+        <q-card-section>
+          <div>
+            <p>Wallet name:</p>
+            <q-input filled autofocus v-model="walletName" :placeholder="walletName"/>
+          </div>
+          <div class="col-1">
+            <p>Choose the net:</p>
+            <q-select outlined v-model="chosenNet" :options="nets"/>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn flat label="Create" color="primary" v-close-popup @click="Address(String(walletName), String(chosenNet))"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+
     <q-dialog v-model="inception">
       <q-card>
         <q-card-section>
@@ -15,7 +35,7 @@
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Standart" @click="Address(String(walletName))" v-close-popup/>
+          <q-btn flat label="Standart" @click="creating = true" v-close-popup/>
           <q-btn flat label="Multisig" @click="GoToCreationMultisigAddress(String(walletName))" v-close-popup/>
         </q-card-actions>
       </q-card>
@@ -66,7 +86,7 @@
               <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
 
                   <q-item-section>
-                  <q-item-label @click= "GoToAddress(contact.name, contact.address, contact.key)">{{ contact.name }}</q-item-label>
+                  <q-item-label @click= "GoToAddress(contact.name, contact.address, contact.key, contact.net)">{{ contact.name }}</q-item-label>
                 
               </q-item-section>
             </q-item>
@@ -78,7 +98,7 @@
             <q-list>
                   <q-item v-for="multisigContact in multisigContacts" :key="multisigContact.id" class="q-my-sm" clickable v-ripple>
                 <q-item-section>
-                    <q-item-label @click="GoToMultisigAddress(multisigContact.holders, multisigContact.signs, multisigContact.keylist, multisigContact.address, multisigContact.name)">{{ multisigContact.name }}</q-item-label>
+                    <q-item-label @click="GoToMultisigAddress(multisigContact.holders, multisigContact.signs, multisigContact.keylist, multisigContact.address, multisigContact.name, multisigContact.net)">{{ multisigContact.name }}</q-item-label>
                 </q-item-section>
                   </q-item>
             </q-list>

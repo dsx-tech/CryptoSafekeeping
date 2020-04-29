@@ -1,5 +1,16 @@
 <template>
  <div class="q-pa-sm main">
+  <q-dialog v-model="deleting">
+    <q-card>
+      <q-card-section>
+        All your funds will be lost! Do you really want to delete the wallet?
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="Delete" color="primary" v-close-popup @click="removeWallet()"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
    
   <q-dialog v-model="manualParameters">
     <q-card>
@@ -12,7 +23,7 @@
         <q-input filled autofocus v-model="trGasPrice" label="Gas Price in gwei"/>
         <q-input filled autofocus v-model="trNonceSender" label="Nonce"/>
         <q-input filled autofocus v-model="trValue" label="Value"/>
-        <q-input filled autofocus v-model="trData" label="Data"/>
+        <q-input filled autofocus v-model="trData" label="Data" placeholder="0x"/>
         <q-input filled autofocus v-model="trAddress" label="Address"/>
       </q-card-section>
 
@@ -30,7 +41,7 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Manual" @click="manualParameters = true" v-close-popup/>
+        <q-btn flat label="Manual" @click="checkConditions()" v-close-popup/>
         <q-btn flat label="By QR-code" @click="createTransaction()" v-show="!showCamera" v-close-popup/>
       </q-card-actions>
     </q-card>
@@ -112,6 +123,10 @@
           <h6> Holders of wallet:</h6>
           <p> {{holders}} </p>
         </div>
+        <div  class="prop-text rounded-borders text-center">
+          <h6> Net:</h6>
+          <p> {{net}} </p>
+        </div>
       </div>
       <h6>Owners:</h6>
     
@@ -151,6 +166,7 @@
       <q-btn label="Create wallet" class="nextButton" @click="overridesGas = true" />
       <q-btn label="Create transaction" class="nextButton" @click="typeEntering = true" />
       <q-btn label="Transfer ERC-20 tokens" class="nextButton" @click="tokens = true; createTransaction()" />
+      <q-btn class="nextButton col" label="Remove the wallet"  @click="deleting = true" v-show="!showCamera"/>
       <h6 v-if="trDetails">Scan transactiom details</h6>
       <h6 v-if="tokenAddres">Scan token address</h6>
       <h6 v-if="walletAddres">Scan wallet address</h6>
@@ -171,6 +187,7 @@
   </q-card-actions>
 
   <div class="wrap-code" v-show="showAllCodes">
+    <q-btn label="hide" class="nextButton" @click="hideCodeTransaction()"/>
     <canvas id="qr-transaction"></canvas>
   </div>
  </div>
@@ -256,6 +273,7 @@ export default{
         }),
     address: [this.$route.params.address],
     name: this.$route.params.name,
+    net: this.$route.params.net,
     isValid: undefined,
     camera: 'auto',
     result: null,
@@ -288,7 +306,8 @@ export default{
     trValue: '',
     trNonceSender: '',
     trGasPrice: '',
-    trGasLimit: ''
+    trGasLimit: '',
+    deleting: false
    }
   },
   
@@ -325,7 +344,7 @@ export default{
                   'Value: ' + json_result.value + '\n' +
                   'nonce: ' + json_result.nonce + '\n' +
                   'data: ' + json_result.data + '\n' +
-                  'chain: ' + json_result.chainId
+                  'chain: ' + ethers.utils.getNetwork(this.net).chainId
       )
 
       let transaction = {
@@ -335,7 +354,7 @@ export default{
             to: json_result.to, 
             value: ethers.utils.parseEther(json_result.value + "")._hex,//.toString(16),//._hex, 
             data: json_result.data,
-            chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
+            chainId: ethers.utils.getNetwork(this.net).chainId    
         }
 
         if (this.tokens)
@@ -402,16 +421,9 @@ export default{
                 gasLimit: parseInt(this.gasLimit),
                 gasPrice: ethers.utils.parseUnits(this.gasPrice, 'gwei'),
                 nonce: parseInt(this.nonceSender),
-                chainId: this.networkId
+                chainId: ethers.utils.getNetwork(this.net).chainId  
             }
 
-            
-        //  overrides = {
-        //     gasLimit: 8000000,
-        //     gasPrice: ethers.utils.parseUnits('40.0', 'gwei'),
-        //     nonce: 1,
-        //     chainId: 3
-        // }
             console.log(overrides)
             Address.newMultisigAddress(this.pKey, this.holders, owners, overrides)
           }
@@ -479,7 +491,7 @@ export default{
                             'Value: ' + json_result.value + '\n' +
                             'nonce: ' + json_result.nonce + '\n' +
                             'data: ' + json_result.data + '\n' +
-                            'chain: ' + json_result.chainId
+                            'chain: ' + ethers.utils.getNetwork(this.net).chainId  
                 )
                 let transaction = {
                       nonce: json_result.nonce,
@@ -488,7 +500,7 @@ export default{
                       to: json_result.to, 
                       value: ethers.utils.parseEther(json_result.value + "")._hex,//.toString(16),//._hex, 
                       data: json_result.data,
-                      chainId: ethers.utils.getNetwork(json_result.chainId).chainId    
+                      chainId: ethers.utils.getNetwork(this.net).chainId  
                   }
                   this.trDetails = false
                   if (this.tokens)
@@ -518,7 +530,14 @@ export default{
       this.choseSingle = false
     },
     hideCodeTransaction(){
+      if (this.showAllCodes) {
+        this.showAllCodes = false
+        for (var i = 1; i < 99999; i++)
+          window.clearInterval(i);
+        //this.$router.push ({name: 'Ethereum' })
+      }
       this.showCodeTransaction = false
+      
     },
     checkOwnersNumber(){
       if (Object.keys(this.keylist).length < this.holders) 
@@ -527,7 +546,8 @@ export default{
     },
     signManual(trGasLimit, trGasPrice, trNonceSender, trValue, trData, trAddress){
         var ethers = require('ethers')
-
+        if (trData == "")
+          trData = "0x"
         let transaction = {
               nonce: parseFloat(trNonceSender),
               gasLimit: parseFloat(trGasLimit),
@@ -535,12 +555,34 @@ export default{
               to: trAddress,
               value: ethers.utils.parseEther(trValue + "")._hex,
               data: trData,
-              chainId: ethers.utils.getNetwork(this.networkId).chainId    
+              chainId: ethers.utils.getNetwork(this.net).chainId     
           }
 
-          let wallet = new ethers.Wallet(this.key)
-          Transaction.signing(wallet, transaction)
+          let wallet = new ethers.Wallet(this.pKey)
+          Transaction.createMultiSigTransaction(this.pKey, transaction, this.address[0])
+          this.showCodeTransaction = true
       },
+
+    checkConditions(trGasLimit, trGasPrice, trNonceSender, trValue, trData, trAddress){
+    if (this.address[0] == null) 
+      alert('Enter the wallet address')
+    else {
+      if (this.pKey == null) 
+        alert("Choose the single wallet for deploying Transaction")
+      else {
+        if (this.$route.params.address == 'null') 
+          alert("You have to import wallet address.")
+        else {
+            this.manualParameters = true
+          }
+        }
+      }
+    },
+
+    removeWallet(){
+      managBD.RemoveMultiAddressDB(this.name)
+      this.$router.push ({name: 'Ethereum' })
+    }
   }
 }
 </script>

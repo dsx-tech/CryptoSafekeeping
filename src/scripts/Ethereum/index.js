@@ -7,37 +7,14 @@ import File from '../filesystem.js';
 import managBD from './ManagBD.js';
 import { QrcodeStream } from 'vue-qrcode-reader'
 
-let contacts = [];
-
-const multisigContacts = [ {
-  name: 'name 1',
-  address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
-  holders: 2,
-  signs: 1,
-  ownersList: ['n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C', 'mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB']
-},
-{
-  name: 'name 2',
-  address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
-  holders: 2,
-  signs: 1,
-  ownersList: ['n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C', 'mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB']
-},
-{
-  address: '2MuvhtsnatLZbgmdBLmUNouHhd11fsvC89u',
-  name: 'name 3',
-  holders: 2,
-  signs: 1,
-  ownersList: ['n2t8F1D41xy6f3d2B6DtjXRRsn8dgUzQ6C', 'mjgF67B4pyEHuGTLU5jS333EasUrZBaxMB']
-}]
 
 export default {
   name: 'PageIndex',
   components: { QrcodeStream },
   data () {
     return {
-      contacts,
-      multisigContacts,
+      contacts: [],
+      multisigContacts: [],
       inception: false,
       importKey: false,
       CountDialog: false,
@@ -47,25 +24,28 @@ export default {
       tab: 'addresses',
       walletName: '',
       showCamera: false,
-      walletNameImport: ''
+      walletNameImport: '',
+      nets: ['mainnet', 'ropsten', 'kovan', 'rinkeby', 'goerli'],
+      chosenNet: '',
+      creating: false
     }
   },
   
   beforeMount(){
     this.contacts = managBD.DownLoadAddresses();
     this.multisigContacts = managBD.DownLoadMultidigAdresses();
-    console.log(multisigContacts)
+    console.log(this.multisigContacts)
     for (var i = 1; i < 99999; i++)
       window.clearInterval(i);
   },
   
   methods: {
-    Address (walletName) {
+    Address (walletName, net) {
       let result = Addresses.newAddress();
       let address = result[0]
       let pKey = result[1]
-      this.contacts.push({ address: address, key: pKey, name: walletName })
-      managBD.InsertAddressDb(address, walletName.toString(), pKey)
+      this.contacts.push({ address: address, key: pKey, name: walletName, net: net})
+      managBD.InsertAddressDb(address, walletName.toString(), pKey, net)
     },
 
     MultisigAddress(walletName, countHolders, countSigns) {
@@ -80,7 +60,7 @@ export default {
 
       this.$router.push({name: 'EthereumMultisigCreation'})
       Addresses.newMultisigAddress(countSigns, arrOwners);
-      multisigContacts.push({name: walletName, address: 'undefined', holders: countHolders, signs: countSigns, ownersList: arrOwners})
+      this.multisigContacts.push({name: walletName, address: 'undefined', holders: countHolders, signs: countSigns, ownersList: arrOwners})
       File.write('MultiSigEthereum.json', multisigContacts);
     },
 
@@ -180,12 +160,12 @@ export default {
       ERC20Token.transferMulti(privateKey, transaction, tokenAddress, contractAddress)
     },
 
-    GoToMultisigAddress (holders, signs, keylist, address, name) {
-     this.$router.push({ name: 'EthereumMultisigPage', params: {signs: signs, holders: holders, keylist: keylist, address: address, name: name, contacts: this.contacts } })
+    GoToMultisigAddress (holders, signs, keylist, address, name, net) {
+     this.$router.push({ name: 'EthereumMultisigPage', params: {signs: signs, holders: holders, keylist: keylist, address: address, name: name, contacts: this.contacts, net: net } })
     },
 
-    GoToAddress(name, address, key){
-      this.$router.push ({name: 'EthereumPage', params:{key: key, name: name, address: address} })
+    GoToAddress(name, address, key, net){
+      this.$router.push ({name: 'EthereumPage', params:{key: key, name: name, address: address, net: net} })
     },
 
     GoToCreationMultisigAddress (walletName) {
