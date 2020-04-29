@@ -44,7 +44,7 @@
         <q-input filled autofocus v-model="trGasPrice" label="Gas Price in gwei"/>
         <q-input filled autofocus v-model="trNonceSender" label="Nonce"/>
         <q-input filled autofocus v-model="trValue" label="Value"/>
-        <q-input filled autofocus v-model="trData" label="Data"/>
+        <q-input filled autofocus v-model="trData" label="Data" placeholder="0x"/>
         <q-input filled autofocus v-model="trAddress" label="Address"/>
       </q-card-section>
 
@@ -68,52 +68,75 @@
     </q-card>
   </q-dialog>
 
-  <div class="prop-text">
-    <div>
-      <h6> Name:</h6>
-      <p> {{name}} </p>
+  <div class="prop-text flex column">
+    <div class="col" style="margin: 80px auto">
+      <p class="text-h3" style="font-weight: bold"> {{name}} </p>
     </div>
-    <div>
-      <h6> Your address:</h6>
-      <p> {{address}} </p>
-    </div> 
-    <div v-if="show">
-      <h6> Your private key: </h6>
-      <p> {{key}} </p>
-    </div>
-    <div>
-      <h6> Net: </h6>
-      <p> {{net}} </p>
+    <div style="padding: 0px 5%; width: 100%;  margin-bottom: 50px;">
+
+      <div class="row" style="padding: 0px 0px;">
+        <div class="col">
+          <b class="text-h6">Your address:</b>
+        </div>
+        <div class="col" style="text-align: right">
+          <b class="text-h6">{{address}} </b>
+          <q-btn class="mainButton" label="show as Qr-code" style="width: 80%; margin-right: -2.5%; height: 40px; padding: 0px" @click="showCodeAddress= !showCodeAddress" />
+        </div>
+      </div> 
+
+      <div v-if="show" class="row" style="padding: 0px 0px;">
+        <div class="col">
+          <b class="text-h6">Your private key:</b>
+        </div>
+        <div class="col-10" style="text-align: right;">
+          <b class="text-h6">{{key}}  </b>
+          <q-btn class="mainButton" label="show as Qr-code" style="width: 50%; margin-right: -2.5%; height: 40px; padding: 0px" @click="showCode = !showCode" />
+        </div>
+      </div> 
     </div>
   </div>
-  <div v-show="showCode" class="flex flex-center">
+
+  <div style="position: absolute; color: #ffffff; right: 1%; top: 60px">
+    <p style="text-transform: uppercase;"> {{net}} </p>
+  </div>
+
+  <div v-show="showCode" class="flex flex-center code">
     <canvas id="qr">
     </canvas>
+    <q-btn class="mainButton" label="Hide"  @click="showCode = false" v-show="!showCamera"/>
   </div>
-  <div v-show="showCodeAddress" class="flex flex-center">
+
+  <div v-show="showCodeAddress" class="flex flex-center code">
     <canvas id="qr-address">
     </canvas>
+    <q-btn class="mainButton" label="Hide"  @click="showCodeAddress = false" v-show="!showCamera"/>
   </div>
-  <div class="flex flex-center row">
-    <q-btn class="nextButton col" label="Show private key as string" @click="show = !show"/>
-    <q-btn class="nextButton col" label="Show private key as Qr-code" @click="showCode = !showCode" />
-    <q-btn class="nextButton col" label="Show address as Qr-code" @click="showCodeAddress= !showCodeAddress" />
+
+  <div class="row justify-between">
+    <q-btn class="mainButton col" label="Show private key" @click="show = !show"/>
+    <q-btn class="mainButton col" label="Send tokens"  @click="tokens = true; turnCameraOn()" v-show="!showCamera"/>
   </div>
-   <div class="flex flex-center row">
-    <q-btn class="nextButton col" label="Sign transaction"  @click="typeEntering = true" v-show="!showCamera"/>
-    <q-btn class="nextButton col" label="Send tokens"  @click="tokens = true; turnCameraOn()" v-show="!showCamera"/>
-    <q-btn class="nextButton col" label="Confirm transaction"  @click="overridesGas = true" v-show="!showCamera"/>
-    <q-btn class="nextButton col" label="Remove the wallet"  @click="deleting = true" v-show="!showCamera"/>
-   </div>
-   <q-btn color="black" label="Back" @click="back()"/>
+  <div class="row justify-between">
+    <q-btn class="mainButton col" label="Sign transaction"  @click="typeEntering = true" v-show="!showCamera"/>
+    <q-btn class="mainButton col" label="Confirm transaction"  @click="overridesGas = true" v-show="!showCamera"/>
+  </div>
+  
+  
+  <div style="width: 100%">
+    <q-btn color="black" style="width: 6%; margin: 20px 0px;" label="Back" @click="back()"/>
+    <q-btn class="mainButton" label="Remove the wallet" style="font-size: 0.8em; margin: 0px 40% 0px 34%; width: 20%; min-width: 200px; height: 40px; padding: 0px; background-color: #702A31" @click="deleting = true" v-show="!showCamera"/>
+  </div>
    <h6 v-if="trDetails">Scan transactiom details</h6>
    <div v-if="showCamera">
           <q-btn color="black" label="Close" @click="turnCameraOff()"/>
           <qrcode-stream :camera="camera" @decode="onDecode">
           </qrcode-stream>
     </div>
+  <div v-show="showCodeTr" class="flex flex-center code">
     <canvas id="qr-transaction">
     </canvas>
+    <q-btn class="mainButton" label="Hide"  @click="showCodeTr = false" v-show="!showCamera"/>
+  </div>
  </div>
 
 </template>
@@ -182,7 +205,8 @@
       trNonceSender: '',
       trGasPrice: '',
       trGasLimit: '',
-      deleting: false
+      deleting: false,
+      showCodeTr: false
     }
     },
     methods:{
@@ -196,12 +220,14 @@
             chainId: this.net
         }
         Transaction.confirmMultisigTransaction(this.key, overrides, content, this.trNumber)
+        this.showCodeTr = true
         this.confirmation = false
         this.turnCameraOff()   
       }
       else if (this.tokenAddressIdentify){
         console.log(this.tempTransaction)
         ERC20.transfer(this.key, this.tempTransaction, content)
+        this.showCodeTr = true
         this.tokenAddressIdentify = false
         this.turnCameraOff()
       }
@@ -257,6 +283,7 @@
           else {
             let wallet = new ethers.Wallet(this.key)
             Transaction.signing(wallet, transaction, false)
+            this.showCodeTr = true
           }
       }
     },
@@ -289,7 +316,10 @@
                 let wallet = new ethers.Wallet(this.key)
                 if (this.tokens)
                   this.tokenAddress(transaction)
-                else Transaction.signing(wallet, transaction)
+                else {
+                  Transaction.signing(wallet, transaction)
+                  this.showCodeTr = true
+                }
             }
           )
       }
@@ -316,12 +346,14 @@
             function (result) {
               alert(result.text)
               ERC20.transfer(privateKey, transaction, result.text)
+              this.showCodeTr = true
             }
           )
       },
       signManual(trGasLimit, trGasPrice, trNonceSender, trValue, trData, trAddress){
         var ethers = require('ethers')
-
+        if (trData == "")
+          trData = "0x"
         let transaction = {
               nonce: parseFloat(trNonceSender),
               gasLimit: parseFloat(trGasLimit),
@@ -334,6 +366,7 @@
 
         let wallet = new ethers.Wallet(this.key)
         Transaction.signing(wallet, transaction)
+        this.showCodeTr = true
       },
 
       removeWallet(){
@@ -344,40 +377,4 @@
   } 
 </script>
 
-<style scoped>
-.prop-text > div{
-  background: rgb(19,78,94);
-  background: linear-gradient(90deg, rgba(19,78,94,1) 0%, rgba(113,178,128,1) 100%);
-  margin-top: 5px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  color: aliceblue;
-}
-#qr, #qr-address{
-  height: 200px
-}
-#qr-transaction{
-  width: 70%;
-}
-.validation-success,
-.validation-failure,
-.validation-pending {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, .8);
-  text-align: center;
-  font-weight: bold;
-  font-size: 1.4rem;
-  padding: 10px;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-}
-.validation-success {
-  color: green;
-}
-.validation-failure {
-  color: red;
-}
-</style>
+<style src="../css/Ethereum/Ethereum.css"></style>

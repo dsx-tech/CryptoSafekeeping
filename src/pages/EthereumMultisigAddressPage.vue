@@ -99,35 +99,50 @@
     </q-card>
   </q-dialog>
 
-  <div class="row wallet-properties justify-center">
-    <div class="col">
+  <div class="prop-text flex column">
+    <div class="col" style="margin: 80px auto">
+      <p class="text-h3" style="font-weight: bold"> {{name}} </p>
+    </div>
+    <div style="padding: 0px 5%; width: 100%;  margin-bottom: 50px;">
+
+      <div class="row" style="padding: 0px 0px;">
+        <div class="col">
+          <b class="text-h6">Your address:</b>
+        </div>
+        <div class="col" style="text-align: right">
+          <b class="text-h6">{{address[0]}} </b>
+          <q-btn class="mainButton" label="show as Qr-code" style="width: 80%; margin-right: -2.5%; height: 40px; padding: 0px" @click="showCodeAddress= !showCodeAddress" />
+        </div>
+      </div> 
+
+      <div class="row" style="padding: 0px 0px;">
+        <div class="col">
+          <b class="text-h6">Needed signers for transactiom:</b>
+        </div>
+        <div class="col" style="text-align: right;">
+          <b class="text-h6">{{signs}}  </b>
+        </div>
+      </div> 
+
+      <div class="row" style="padding: 0px 0px;">
+        <div class="col">
+          <b class="text-h6">Holders of wallet:</b>
+        </div>
+        <div class="col" style="text-align: right;">
+          <b class="text-h6">{{holders}}  </b>
+        </div>
+      </div> 
+
+      <div style="position: absolute; color: #ffffff; right: 1%; top: 60px">
+        <p style="text-transform: uppercase;"> {{net}} </p>
+      </div>
       <div v-if="showCodeTransaction">
         <canvas id="qr-transaction">
         </canvas>
-        <q-btn label="hide" class="nextButton" @click="hideCodeTransaction()"/>
+        <q-btn label="hide" class="mainButton" @click="hideCodeTransaction()"/>
       </div>
-      <div class="justify-center">
-        <div  class="prop-text rounded-borders text-center">
-          <h6> Your name:</h6>
-          <p> {{name}} </p>
-        </div>
-        <div  class="prop-text rounded-borders text-center">
-          <h6> Your address:</h6>
-          <p> {{address[0]}} </p>
-        </div>
-        <div  class="prop-text rounded-borders text-center">
-          <h6> Needed signers for transactiom:</h6>
-          <p> {{signs}} </p>
-        </div>
-        <div  class="prop-text rounded-borders text-center">
-          <h6> Holders of wallet:</h6>
-          <p> {{holders}} </p>
-        </div>
-        <div  class="prop-text rounded-borders text-center">
-          <h6> Net:</h6>
-          <p> {{net}} </p>
-        </div>
-      </div>
+    
+    <div class="col">
       <h6>Owners:</h6>
     
       <q-list>
@@ -139,9 +154,12 @@
       </q-list>
 
       <div>
-        <h6>Choose single wallet for deploy creation</h6>
+        <div class="row">
+          <h6 class="col">Choose single wallet for deploy creation</h6>
+          <q-btn flat style="margin: auto" class="mainButton col" label="choose wallet" v-show="btnChoice" @click="choiceSingle = true; btnChoice = false"/>
+        </div>
         <div>
-          <q-btn flat style="margin: auto" class="nextButton" label="choose wallet" v-show="btnChoice" @click="choiceSingle = true; btnChoice = false"/>
+          
           <q-list v-show="choiceSingle">
             <q-item v-for="contact in contacts" :key="contact.id" class="q-my-sm" clickable v-ripple>
 
@@ -153,20 +171,34 @@
         </div>
         <div class="chose row" v-show="choseSingle">
           <p class="col" style="margin: auto">{{ nameSingle }} </p>
-          <q-btn flat class="nextButton col" id="activateChoice" label="change wallet" @click="activateChoice()"/>
+          <q-btn flat class="mainButton col" id="activateChoice" label="change wallet" @click="activateChoice()"/>
         </div>
       </div>
-
     </div>
+    </div>
+
+
+
+
   </div>
 
-  <div class="col text-center">
-      <q-btn label="Add holder" class="nextButton" @click="checkOwnersNumber()" v-show="!showCamera"/>
-      <q-btn label="Import wallet address" class="nextButton" @click="importAddress()" v-show="!showCamera"/>
-      <q-btn label="Create wallet" class="nextButton" @click="overridesGas = true" />
-      <q-btn label="Create transaction" class="nextButton" @click="typeEntering = true" />
-      <q-btn label="Transfer ERC-20 tokens" class="nextButton" @click="tokens = true; createTransaction()" />
-      <q-btn class="nextButton col" label="Remove the wallet"  @click="deleting = true" v-show="!showCamera"/>
+
+
+
+
+  <div class="col text-center msButtons" style="padding: 0px 5%">
+      <div class="row justify-between">
+        <q-btn label="Add holder" class="mainButton  col" @click="checkOwnersNumber()" v-show="!showCamera"/>
+        <q-btn label="Import wallet address" class="mainButton  col" @click="importAddress()" v-show="!showCamera"/>
+      </div>
+      <div class="row justify-between">
+        <q-btn label="Create wallet" class="mainButton  col" @click="overridesGas = true" />
+        <q-btn label="Create transaction" class="mainButton  col" @click="typeEntering = true" />
+      </div>
+      <div class="row justify-between">
+        <q-btn label="Transfer ERC-20 tokens" class="mainButton  col" @click="tokens = true; createTransaction()" />
+        <q-btn class="mainButton col" label="Remove the wallet"  @click="deleting = true" v-show="!showCamera"/>
+      </div>
       <h6 v-if="trDetails">Scan transactiom details</h6>
       <h6 v-if="tokenAddres">Scan token address</h6>
       <h6 v-if="walletAddres">Scan wallet address</h6>
@@ -181,72 +213,19 @@
   </div>
 
   <q-card-actions align="right" class="text-primary">
-    <q-btn flat label="Back" @click="Back()"/>
+    <q-btn flat label="Back" @click="Back()"  style="color: #ffffff"/>
 
-    <q-btn flat label="Save" @click="SaveAddresses()" v-close-popup />
+    <q-btn flat label="Save" @click="SaveAddresses()" v-close-popup  style="color: #ffffff"/>
   </q-card-actions>
 
   <div class="wrap-code" v-show="showAllCodes">
-    <q-btn label="hide" class="nextButton" @click="hideCodeTransaction()"/>
+    <q-btn label="hide" class="mainButton" @click="hideCodeTransaction()"/>
     <canvas id="qr-transaction"></canvas>
   </div>
  </div>
 </template>
 
-<style scoped>
-  .main{
-    background-color: white;
-  }
-  .prop-text{
-    background: rgb(19,78,94);
-    background: linear-gradient(90deg, rgba(19,78,94,1) 0%, rgba(113,178,128,1) 100%);
-    margin-top: 5px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    color: aliceblue;
-  }
-  .class {
-    width: 100%;
-  }
-  .wallet-properties{
-    color: rgb(105, 105, 105);
-    width: 60%;
-    margin: auto;
-  }
-  h6{
-    margin-top: 30px;
-  }
-  p{
-    margin-top: -30px;
-  }
-  #activateChoice{
-    margin: 0;
-    font-size: 10px;
-    height: 50px;
-  }
-  .validation-success,
-  .validation-failure,
-  .validation-pending {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(85, 85, 85, 0.8);
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.4rem;
-    padding: 10px;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-  }
-  .validation-success {
-    color: green;
-  }
-  .validation-failure {
-    color: red;
-  }
-</style>
-
+<style src="../css/Ethereum/Ethereum.css"></style>
 <script>
 import QRcode from '../scripts/Ethereum/QRcode.js'
 import { QrcodeStream } from 'vue-qrcode-reader'

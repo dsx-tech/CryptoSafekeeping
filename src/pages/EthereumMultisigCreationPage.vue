@@ -1,31 +1,29 @@
 <template>
   <q-page>
 
-    <div class="q-pa-md">
-      <div class="q-pt-lg">
-        <div>
-          <p>Wallet name:</p>
-          <q-input filled autofocus v-model="walletName" :placeholder="walletName"/>
+    <div class="q-pa-md q-pt-lg creationMs">
+        <div class="row" style="padding: 20px 0px">
+          <p class="col text-h6">Wallet name:</p>
+          <q-input  class="col" filled autofocus v-model="walletName" :placeholder="walletName"/>
         </div>
-        <div>
-          <p>Number of owners:</p>
-          <q-select outlined v-model="countHolders" :options="options"/>
+        <div class="row justify-between" style="padding: 20px 0px">
+          <p class="col-5 text-h6">Number of owners:</p>
+          <q-select class="col-1" outlined v-model="countHolders" :options="options"/>
         </div>
-        <div class="col-1">
-          <p>Number of signs for transaction:</p>
-          <q-select outlined v-model="countSigns" :options="options"/>
+        <div class="row justify-between" style="padding: 20px 0px">
+          <p class="col-5 text-h6">Number of signs for transaction:</p>
+          <q-select class="col-1" outlined v-model="countSigns" :options="options"/>
         </div>
-        <div class="col-1">
-          <p>Choose the net:</p>
-          <q-select outlined v-model="chosenNet" :options="nets"/>
+        <div class="row justify-between" style="padding: 20px 0px">
+          <p class="col-5 text-h6">Choose the net:</p>
+          <q-select class="col-2" style="text-transform: uppercase;" outlined v-model="chosenNet" :options="nets"/>
         </div>
-      </div>
     </div>
 
     <q-card-actions align="right" class="text-primary">
-      <q-btn flat label="Cancel" @click="cancel()"/>
+      <q-btn class="mainButton" style="height: 50px; padding: 0px 15px" label="Cancel" @click="cancel()"/>
 
-      <q-btn flat label="Save" @click="SaveAddresses()" v-close-popup />
+      <q-btn class="mainButton" style="height: 50px; padding: 0px 15px" label="Save" @click="SaveAddresses()" v-close-popup />
     </q-card-actions>
 
 
@@ -43,29 +41,7 @@
   </q-page>
 </template>
 
-<style scoped>
-  .validation-success,
-  .validation-failure,
-  .validation-pending {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, .8);
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.4rem;
-    padding: 10px;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-  }
-  .validation-success {
-    color: green;
-  }
-  .validation-failure {
-    color: red;
-  }
-</style>
+<style src="../css/Ethereum/Ethereum.css"></style>
 
 <script>
 import Addresses from '../scripts/Ethereum/Address.js'
@@ -93,7 +69,7 @@ export default {
       nets: ['mainnet', 'ropsten', 'kovan', 'rinkeby', 'goerli'],
       options: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
       model: null,
-      chosenNet: ''
+      chosenNet: 'mainnet'
     }
   },
   

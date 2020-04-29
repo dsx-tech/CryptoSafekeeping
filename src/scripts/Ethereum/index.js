@@ -27,7 +27,8 @@ export default {
       walletNameImport: '',
       nets: ['mainnet', 'ropsten', 'kovan', 'rinkeby', 'goerli'],
       chosenNet: '',
-      creating: false
+      creating: false,
+      chosenNet: 'mainnet'
     }
   },
   
@@ -172,7 +173,7 @@ export default {
       this.$router.push({ name: 'EthereumMultisigCreation', params: {walletName: walletName} })
      },
 
-    ImportKey(walletName) {
+    ImportKey(walletName, net) {
       if (this.$q.platform.is.mobile){
         cordova.plugins.barcodeScanner.scan(
           function (resultKey) {
@@ -181,7 +182,7 @@ export default {
             let address = result[0]
             let pKey = result[1]
             this.contacts.push({ address: address, key: pKey, name: walletName })
-            managBD.InsertAddressDb(address, walletName.toString(), pKey)
+            managBD.InsertAddressDb(address, walletName.toString(), pKey, net)
           }
         )
       }
@@ -203,7 +204,7 @@ export default {
       let pKey = wallet.privateKey;
       let address = wallet.address;
       this.contacts.push({ address: address, key: pKey, name: this.walletNameImport })
-      managBD.InsertAddressDb(address, this.walletName.toString(), pKey)
+      managBD.InsertAddressDb(address, this.walletName.toString(), pKey, net)
       this.turnCameraOff()
     },
 

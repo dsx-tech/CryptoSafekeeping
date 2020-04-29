@@ -14,7 +14,7 @@ export default {
     }
 
     db.transaction(function(tx) {
-    //tx.executeSql('DROP TABLE IF EXISTS addresses_ethereum');
+    // tx.executeSql('DROP TABLE IF EXISTS addresses_ethereum');
     //create table
     tx.executeSql("CREATE TABLE IF NOT EXISTS addresses_ethereum (address text, name text primary key, key text, net text)", [], function(tx, res){
 
@@ -54,7 +54,7 @@ export default {
           }
 
           db.transaction(function(tx) {
-            //tx.executeSql('DROP TABLE IF EXISTS multisig_addresses_ethereum');
+            // tx.executeSql('DROP TABLE IF EXISTS multisig_addresses_ethereum');
             tx.executeSql("CREATE TABLE IF NOT EXISTS multisig_addresses_ethereum (name text primary key, address text, holders integer, signs integer, keylist text, net text)", [], function(tx, res){
         
             db.transaction(function(tx) {                    
