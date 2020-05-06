@@ -125,9 +125,11 @@
 import settings from "src/scripts/Bitcoin/settings.js";
 import QRCode from "src/scripts/Bitcoin/QRCode.js";
 import { QrcodeStream } from "vue-qrcode-reader";
-import Transaction from '../scripts/Bitcoin/Transaction.js';
+import Transaction from '../scripts/BCH/Transaction.js';
 let bitcoin = require("bitcoinjs-lib");
+var bch = require('bitcore-lib-cash');
 var QRious = require('QRious')
+var Address = bch.Address;
 
 export default {
     components: { QrcodeStream },
@@ -232,10 +234,13 @@ export default {
         this.$router.push ({name: 'Bitcoin' })
       },
     signManual(trValue, trAddress, transaction, trСomission){
-      Transaction.Transaction(transaction, this.signkey, trValue - trСomission, trValue, trAddress, this.net, this.publicKey)
+        var a = new Address(trAddress);
+        var b = a.toLegacyAddress()
+       console.log(this.address)
+      Transaction.Transaction(transaction, this.privateKey,  trValue, b, this.net, this.address)
       this.showCodeTr = true
     },
   }
 };
 </script>
-<style src="../css/Bitcoin/Bitcoin.css"></style>
+<style src="../css/BCH/BCH.css"></style>

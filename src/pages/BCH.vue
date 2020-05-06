@@ -156,5 +156,5 @@
   </div>
   </q-page>
 </template>
-<script src="../scripts/Bitcoin/index.js"></script>
-<style src="../css/Bitcoin/Bitcoin.css"></style>
+<script src="../scripts/BCH/index.js"></script>
+<style src="../css/BCH/BCH.css"></style>

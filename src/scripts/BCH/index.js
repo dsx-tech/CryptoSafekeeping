@@ -1,14 +1,18 @@
 import { QrcodeStream } from 'vue-qrcode-reader'
-import settings from './settings.js'
 import managBD from './ManagBD.js'
+import settings from './settings.js'
+import Bsettings from 'src/scripts/Bitcoin/settings.js'
+var bch = require('bitcore-lib-cash');
 let bitcoin = require('bitcoinjs-lib')
+
+
 
 export default {
   components: { QrcodeStream },
   data () {
     return {
       contacts:[],
-      nets: ['bitcoin', 'testnet', 'regtest'],
+      nets: ['livenet', 'testnet', 'regtest'],
       multisigContacts:[],
       importKey: false,
       inception: false,
@@ -31,47 +35,17 @@ export default {
   },
 
   methods: {
-    ImportKey(walletName, net) {
-      if (this.$q.platform.is.mobile){
-        cordova.plugins.barcodeScanner.scan(
-          function (resultKey) {
-            alert(resultKey.text)
-            let result = Addresses.newAddress(resultKey.text);
-            let address = result[0]
-            let pKey = result[1]
-            this.contacts.push({ address: address, key: pKey, name: walletName })
-            managBD.InsertAddressDb(address, walletName.toString(), pKey, net)
-          }
-        )
-      }
-      else {
-        this.walletNameImport = walletName
-        this.camera = 'auto'
-        this.showCamera = true
-      }
-    },
 
-    turnCameraOff () {
-      this.camera = 'off'
-      this.showCamera = false
-    },
-
-    async onDecode (content) {
-      alert(content)
-      let wallet = new ethers.Wallet(content);
-      let pKey = wallet.privateKey;
-      let address = wallet.address;
-      this.contacts.push({ address: address, key: pKey, name: this.walletNameImport })
-      managBD.InsertAddressDb(address, this.walletName.toString(), pKey, net)
-      this.turnCameraOff()
-    },
     Address (name, net) {
-      const keyPair = bitcoin.ECPair.makeRandom()
-      const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: settings.data(net) })
-      this.contacts.push({ address: address, key: keyPair.toWIF(), name: name, net: net })
+      const keyPair = bitcoin.ECPair.makeRandom({})
+      const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: Bsettings.data(net) })
+      console.log(address)
+      var a = new bch.Address(address);
+     console.log(a.toCashAddress())
+      this.contacts.push({ address: a, key: keyPair.toWIF(), name: name, net: net })
       managBD.InsertAddressDb(address, name.toString(), keyPair.toWIF(), net)
     },
-    MultisigAddress (holders, signs, name, net) {
+    MultisigAddress (holders, signs, name) {
       let keyList = []
       var yourKey = bitcoin.ECPair.makeRandom({ network: settings.data() })
       alert('Your public key: ' + yourKey.publicKey.toString('hex'))
@@ -94,8 +68,8 @@ export default {
       alert(address)
       console.log(address)
       let json = JSON.stringify(keyList);
-      multisigContacts.push({ address: address, key: yourKey, holders: holders, signs: signs, keyList: keyList, name: name, net: net })
-      managBD.InsertMultisigDb(address, name, yourKey, holders, signs, keylist, net)
+      multisigContacts.push({ address: address, key: yourKey, holders: holders, signs: signs, keyList: keyList, name: name })
+      managBD.InsertMultisigDb()
     },
 
     SignTransaction(str1, str2, amount, key){
@@ -135,14 +109,14 @@ export default {
     /*Scan(key) {
       this.result = result
     },*/
-    GoToMultisigAddress (key, holders, signs, keyList, address, name, net) {
-     this.$router.push({ name: 'BitcoinMultisigPage', params: { key: key, signs: signs, holders: holders, keyList: keyList, address: address, name: name, net: net } })
+    GoToMultisigAddress (key, holders, signs, keyList, address, name) {
+      console.log(keyList);
+     this.$router.push({ name: 'BitcoinMultisigPage', params: { key: key, signs: signs, holders: holders, keyList: keyList, address: address, name: name } })
     },
 
-    GoToAddress (name, address, key, net) {
+    GoToAddress (name, address, key) {
       console.log(key)
-      console.log(address)
-      this.$router.push({ name: 'BitcoinPage', params: { key: key, name: name, address: address, net: net } })
+      this.$router.push({ name: 'BCHPage', params: { key: key, name: name, address: address } })
     },
     GoBack () {
       this.$router.go(-1)
