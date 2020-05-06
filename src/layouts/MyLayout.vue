@@ -49,6 +49,14 @@
             <q-item-label>Ethereum</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item to="/bch" clickable>
+          <q-item-section avatar>
+            <q-icon name="sentiment_satisfied" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>BCH</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item to="/startPage" clickable>
           <q-item-section avatar>
             <q-icon name="sentiment_satisfied_alt" />
