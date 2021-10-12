@@ -19,7 +19,7 @@
     "canvas": "^2.6.1",
     "cordova": "^9.0.0",
     "dotenv": "^8.2.0",
-    "electron": "^7.1.7",
+    "electron": "^11.5.0",
     "es6-promise": "^4.2.8",
     "ethers": "^4.0.44",
     "module": "^1.2.5",
